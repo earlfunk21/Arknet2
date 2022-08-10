@@ -1,0 +1,20 @@
+
+{% macro render_field(field, prefix=None, suffix=None) %}
+    <div class="col-12">
+      {{ field.label(class='form-label') }}
+      <div class="input-group has-validation">
+        {% if prefix %}
+          <span class="input-group-text" id="inputGroupPrepend">{{ prefix }}</span>
+        {% endif %}
+        {{ field(class="form-control" + (" is-invalid" if field.errors else "") ) }}
+        {% if suffix %}
+          <span class="input-group-text" id="inputGroupPrepend">{{ suffix }}</span>
+        {% endif %}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+{% endmacro %}

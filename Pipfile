@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+wtforms = "*"
+wtforms-sqlalchemy = "*"
+flask-sqlalchemy = "*"
+flask-wtf = "*"
+python-dotenv = "*"
+mysqlclient = "*"
+pymysql = "*"
+flask-migrate = "*"
+timeago = "*"
+captcha = "*"
+flask-sessionstore = "*"
+flask-session-captcha = "*"
+gunicorn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

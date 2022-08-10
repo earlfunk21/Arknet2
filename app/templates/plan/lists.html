@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Plans{% endblock %}
+
+
+{% block body %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+    {% include 'includes/logo.html' %}
+    {% include 'includes/search_bar.html' %}
+    {% include 'includes/navbar.html' %}
+  </header><!-- End Header -->
+
+   <!-- ======= Sidebar ======= -->
+   {% include 'includes/sidenav.html' %}
+
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Plans</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item">Plan</li>
+          <li class="breadcrumb-item active">Lists</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section pt-5">
+        <div class="row">
+            {% for plan in plans %}
+							<div class="col-xxl-3 col-md-6 mx-auto">
+            		<div class="card info-card sales-card py-4">
+            		  <div class="card-body">
+            		    <h1>Unli Fiber Plan <span class="h1 text-primary">{{ plan.price }} </span></h1>
+            		    <p><span class="card-title text-"> up to {{ plan.speed }} Mbps</span></p>
+            		    <p>for only ₱ <span class="text-success">{{ "{:,.2f}".format(plan.price) }}</span></p>
+            		  </div>
+            		</div>
+							</div>
+						{% endfor %}
+        </div>
+      </section>
+  
+
+  </main><!-- End #main -->
+
+{% endblock %}
