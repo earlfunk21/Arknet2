@@ -30,6 +30,7 @@ class DevelopmentConfig(Config):
 # create the production config
 class ProductionConfig(Config):
     DEBUG = False
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
