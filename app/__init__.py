@@ -17,7 +17,6 @@ captcha = FlaskSessionCaptcha()
 # Creating Application
 def create_app(config=ProductionConfig):
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "HelloHeroku"
     app.config.from_object(config)
     
     # Extensions
