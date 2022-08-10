@@ -54,8 +54,14 @@
         </li><!-- End Plan Nav -->
 
         <li class="nav-item">
+          <a class="nav-link collapsed" href="{{ url_for('main.expenses_form') }}">
+            <i class="bi bi-coin"></i>
+            <span>Add Expenses</span>
+          </a>
+        </li><!-- End Reports Page Nav -->
+        <li class="nav-item">
           <a class="nav-link collapsed" href="{{ url_for('main.report_lists') }}">
-            <i class="bi bi-person"></i>
+            <i class="bi bi-exclamation-lg"></i>
             <span>Reports</span>
           </a>
         </li><!-- End Reports Page Nav -->
@@ -71,42 +77,19 @@
           <span>Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('main.profile') }}">
+          <i class="bi bi-clock-history"></i>
+          <span>Payments History</span>
+        </a>
+      </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#user-payments-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Payments</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link collapsed" href="{{ url_for('main.send_report') }}">
+          <i class="bi bi-send-exclamation"></i>
+          <span>Send Report</span>
         </a>
-        <ul id="user-payments-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="#">
-              <i class="bi bi-circle"></i><span>Payments History</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="bi bi-circle"></i><span>Proof of Payments</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Payments Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#reports-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="reports-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="#">
-              <i class="bi bi-circle"></i><span>My Reports</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i class="bi bi-circle"></i><span>Send Report</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Payments Nav -->
+      </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{{ url_for('auth.logout') }}">

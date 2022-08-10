@@ -61,7 +61,7 @@ class User(db.Model):
 
     @property
     def current_payment(self):
-        return Payment.query.join(User.payments).order_by(Payment.due_date).filter(User.is_active == True).filter(User.id == Payment.user_id).first()
+        return Payment.query.order_by(Payment.due_date.asc()).filter(Payment.user_id==self.id).filter(Payment.is_expired == False).first()
 
     @hybrid_property
     def is_active(self):
@@ -73,7 +73,7 @@ class User(db.Model):
     
     @property
     def due_date(self):
-        return self.current_payment.due_date
+        return self.current_payment.due_date or None
 
 
 class UserDetails(db.Model):
