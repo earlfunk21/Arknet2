@@ -98,11 +98,11 @@ class UserDetails(db.Model):
 
 class SocialMedia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    company = db.Column(db.String(255))
+    name = db.Column(db.String(255))
     account_name = db.Column(db.String(255))
 
     def __str__(self) -> str:
-        return self.company
+        return self.name
 
 
 class Plan(db.Model):

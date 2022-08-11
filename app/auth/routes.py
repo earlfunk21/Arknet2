@@ -64,7 +64,7 @@ def register_about(token):
         phone = form.phone.data
         company = request.form.get('company')
         account_name = request.form.get('account_name')
-        social_media = SocialMedia(company=company, account_name=account_name)
+        social_media = SocialMedia(name=company, account_name=account_name)
         user_details = UserDetails(first_name=first_name,
                                 middle_name=middle_name,
                                 last_name=last_name,
@@ -105,7 +105,7 @@ def update_password(token):
         username = loads_token(token, max_age=1800, salt="forgot_password")
         user = User.query.filter_by(username=username).first()
     if not user:
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.forgot_password"))
     form = UpdatePasswordForm(user)
     if form.validate_on_submit():
         password = form.password.data
@@ -114,4 +114,4 @@ def update_password(token):
         db.session.commit()
         flash("Successful", "success")
         return redirect(url_for('auth.logout'))
-    return render_template("auth/update_password.html", form=form, question=user.secret_answer.question)
+    return render_template("auth/update_password.html", form=form, question=user.secret_answer.secret_question)

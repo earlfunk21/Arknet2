@@ -26,11 +26,6 @@
                 <i class="bi bi-circle"></i><span>Add Payment</span>
               </a>
             </li>
-            <li>
-              <a href="#">
-                <i class="bi bi-circle"></i><span>Proof of payments</span>
-              </a>
-            </li>
           </ul>
         </li><!-- End Payment Nav -->
       
@@ -78,7 +73,7 @@
         </a>
       </li><!-- End Profile Page Nav -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{{ url_for('main.profile') }}">
+        <a class="nav-link collapsed" href="{{ url_for('admin.payment.payment_table', token=dumps_token(load_user().username, salt='search_username')) }}">
           <i class="bi bi-clock-history"></i>
           <span>Payments History</span>
         </a>
@@ -90,6 +85,13 @@
           <span>Send Report</span>
         </a>
       </li><!-- End Profile Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('auth.update_password', token=dumps_token(load_user().username, salt='forgot_password')) }}">
+          <i class="bi bi-lock"></i>
+          <span>Update Password</span>
+        </a>
+      </li><!-- End Logout Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{{ url_for('auth.logout') }}">

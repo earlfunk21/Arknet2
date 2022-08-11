@@ -1,6 +1,6 @@
 
 from os import abort
-from flask import redirect, session, url_for
+from flask import redirect, request, session, url_for
 from app.models import db, User
 from app.auth import auth_bp
 
@@ -43,7 +43,7 @@ def require_login(func, login_url="auth.login"):
 
 def admin_required(func):
     def decors(*args, **kwargs):
-        if not load_user().is_admin:
+        if not load_user().is_admin and not request.args.get('token'):
             return abort(403)
         return func(*args, **kwargs)
     decors.__name__ = func.__name__

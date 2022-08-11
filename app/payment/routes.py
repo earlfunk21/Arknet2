@@ -1,9 +1,11 @@
 import datetime
-from app.models import Payment, db
+from app.models import Payment, User, db
 from app.payment import payment_bp
 from app.payment.forms import PaymentForm
-from flask import render_template
+from flask import render_template, abort, request
 from app.auth.utils import admin_required, load_user, require_login
+from sqlalchemy import or_
+from app.utils import loads_token
 
 
 @payment_bp.route("/form/", methods=["POST", "GET"])
@@ -32,9 +34,16 @@ def payment_form():
 @require_login
 @admin_required
 def payment_table(page=1):
-    payments = Payment.query.order_by(Payment.date_paid.desc()).paginate(page=page, error_out=False, per_page=10)
+    token = request.args.get('token')
+    payments = Payment.query.order_by(Payment.date_paid.desc())
+    if token:
+        try:
+            search = loads_token(token, salt='search_username')
+            payments = payments.join(Payment.user).filter(or_(User.username.like(f"%{search}%")))
+        except:
+            return abort(403)
     context = dict(
-        payments=payments
+        payments=payments.paginate(page=page, error_out=False, per_page=10)
     )
     return render_template("payment/table.html", **context)
 

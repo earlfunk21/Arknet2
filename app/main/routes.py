@@ -3,7 +3,7 @@ from flask import abort, render_template, request, redirect, url_for
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
 from app.main.form import ExpensesForm, ReportForm
-from app.models import Expenses, OperatingExpenses, Payment, Plan, Report, User
+from app.models import Expenses, OperatingExpenses, Payment, Plan, Report, User, UserDetails
 from app.main import main_bp
 from sqlalchemy import extract, and_, func
 
@@ -49,8 +49,8 @@ def dashboard():
     return render_template('main/dashboard.html', **context)
 
 
-@main_bp.route("/profile/", defaults={"token": None})
-@main_bp.route("/profile/<token>/")
+@main_bp.route("/", defaults={"token": None}, methods=["POST", "GET"])
+@main_bp.route("/<token>/")
 @require_login
 def profile(token):
     user = load_user()
@@ -60,6 +60,17 @@ def profile(token):
             user = User.query.filter_by(username=username).first()
         except BadSignature:
             return abort(401)
+    if request.method == "POST":
+        about = request.form['about']
+        phone = request.form['phone']
+        company = request.form['company']
+        account_name = request.form['account_name']
+        user.user_details.about = about
+        user.user_details.phone = phone
+        user.user_details.social_media.name = company
+        user.user_details.social_media.account_name = account_name
+        db.session.commit()
+        
     return render_template("main/profile.html", user=user)
 
 

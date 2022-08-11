@@ -17,7 +17,7 @@ def drop_all():
 
 @admin_bp.cli.command("init")
 def init():
-    
+    db.create_all()
     question1 = SecretQuestion(question="What was your first car?")
     question2 = SecretQuestion(question="What elementary school did you attend?")
     question3 = SecretQuestion(question="What is your mother's maiden name?")
@@ -33,12 +33,23 @@ def init():
     plan3 = Plan(price=500, speed=15)
     db.session.add_all([plan1, plan2, plan3])
     
-    social_media = SocialMedia(company="facebook", account_name="user@test")
+    social_media = SocialMedia(name="facebook", account_name="user@test")
     
     user_details = UserDetails(first_name="admin", middle_name="admin", last_name="admin", address="secret", phone="secret", social_media=social_media)
     
     user = User(username="admin", password="admin123", secret_answer=secret_answer, is_admin=True, user_details=user_details)
     db.session.add(user)
+    
+    op_expenses1 = OperatingExpenses(name="Equipment")
+    op_expenses2 = OperatingExpenses(name="Office Supply")
+    op_expenses3 = OperatingExpenses(name="Rent")
+    op_expenses4 = OperatingExpenses(name="Repair")
+    op_expenses5 = OperatingExpenses(name="Utility")
+    op_expenses6 = OperatingExpenses(name="Manpower")
+    op_expenses7 = OperatingExpenses(name="Marketing")
+    op_expenses8 = OperatingExpenses(name="Other")
+    
+    db.session.add_all([op_expenses1, op_expenses2, op_expenses3, op_expenses4, op_expenses5, op_expenses6, op_expenses7, op_expenses8])
     
     db.session.commit()
 

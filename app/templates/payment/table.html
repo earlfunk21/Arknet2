@@ -55,7 +55,7 @@
                           <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(payment.user.username, salt='username')) }}">{{ payment.user }}</a></td>
                           <td>{{ payment.plan.price }}</td>
                           <td>{{ payment.date_paid.strftime("%d %B %Y, %I:%M %p") }}</td>
-                          <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(payment.received_by.username, salt='username')) }}">{{ payment.received_by }}</a></td>
+                          <td><a>{{ payment.received_by }}</a></td>
                           <td>{{ payment.due_date.strftime("%d %B %Y") }}</td>
                           <td>{{ payment.remarks }}</td>
                       </tr>
@@ -87,7 +87,7 @@
                   {% for page in payments.iter_pages() %}
                       {% if page %}
                           {% if page != payments.page %}
-                              <li class="page-item"><a class="page-link" href="{{ url_for('admin.payment.payment_table', page=page) }}">{{ page }}</a></li>
+                              <li class="page-item"><a class="page-link" href="{{ url_for('admin.payment.payment_table', page=page, **request.args) }}">{{ page }}</a></li>
                           {% else %}
                               <li class="page-item active" aria-current="page"><a class="page-link" href="{{ url_for('admin.payment.payment_table', page=page) }}">{{ page }}</a></li>
                           {% endif %}
