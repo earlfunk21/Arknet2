@@ -3,9 +3,11 @@ from app.models import Payment, User, db
 from app.payment import payment_bp
 from app.payment.forms import PaymentForm
 from flask import render_template, abort, request
+from werkzeug.utils import secure_filename
 from app.auth.utils import admin_required, load_user, require_login
 from sqlalchemy import or_
 from app.utils import loads_token
+from app import fik
 
 
 @payment_bp.route("/form/", methods=["POST", "GET"])
@@ -20,10 +22,22 @@ def payment_form():
         months = form.months.data * 30
         years = form.years.data * 365
         user = form.user.data
+        file = form.receipt.data
         due_date = datetime.datetime.now() + datetime.timedelta(days=days + months + years)
         if user.recent_payment:
             due_date = user.recent_payment.due_date + datetime.timedelta(days=days + months + years)
-        payment = Payment(remarks=remarks, due_date=due_date, plan=plan, user=user, received_by=load_user())
+        payment = Payment(remarks=remarks,
+                          due_date=due_date,
+                          plan=plan,
+                          user=user,
+                          received_by=load_user())
+        response = None
+        if file:
+            response = fik.upload(file)
+            if not response:
+                return abort(500)
+            payment.receipt = response['url']
+            payment.receipt_id = response['fileId']
         db.session.add(payment)
         db.session.commit()
         return "Submitted"

@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from enum import unique
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -124,6 +125,8 @@ class Payment(db.Model):
     date_paid = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     due_date = db.Column(db.DateTime(timezone=True), nullable=False,
                          default=datetime.datetime.now() + datetime.timedelta(days=30))
+    receipt = db.Column(db.String(255), unique=True)
+    receipt_id = db.Column(db.Integer, unique=True)
 
     # relationships
     received_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -195,11 +198,17 @@ class Expenses(db.Model):
                                  group_by(OperatingExpenses).\
                                      order_by(db.func.sum(Expenses.amount)).all()
     
-class Budget(db.Model):
+    
+class Capital(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, nullable=False)
     date_added = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now())
     
     @classmethod
-    def total_budget(self):
-        return db.session.query(db.func.sum(Budget.amount)).first()[0] or 0
+    def total_capital(cls):
+        return db.session.query(db.func.sum(Capital.amount)).first()[0] or 0
+    
+    @classmethod
+    def onhand_capital(cls):
+        return cls.total_capital() - Expenses.total_expenses()
+

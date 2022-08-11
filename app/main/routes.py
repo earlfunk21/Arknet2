@@ -2,10 +2,10 @@ import datetime
 from flask import abort, render_template, request, redirect, url_for
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
-from app.main.form import ExpensesForm, ReportForm
-from app.models import Expenses, OperatingExpenses, Payment, Plan, Report, User, UserDetails
+from app.main.form import CapitalForm, ExpensesForm, ReportForm
+from app.models import Capital, Expenses, OperatingExpenses, Payment, Plan, Report, User, UserDetails
 from app.main import main_bp
-from sqlalchemy import extract, and_, func
+from sqlalchemy import and_
 
 from app.utils import extract_date, loads_token
 from app.models import db
@@ -18,31 +18,26 @@ def dashboard():
     gross_sales = db.session.query(db.func.sum(Plan.price)).join(Payment).filter(
         and_(*extract_date(Payment.date_paid, filter_date=request.args.get('filter')))).first()[0] or 0
     
-    expenses = db.session.query(db.func.sum(Expenses.amount)).filter(
-        and_(*extract_date(Expenses.date_reported, filter_date=request.args.get('filter')))).first()[0] or 0
+    capital = Capital.onhand_capital()
     
-    net_sales = gross_sales - expenses
-    net_sales_status = "{:,.2f}".format((net_sales / (Payment.total_sales() - Expenses.total_expenses()) if net_sales else 0) * 100)
+    net_sales = gross_sales
+    if capital < 0:
+        net_sales = net_sales + capital
+        capital = 0
     
     op_expenses = db.session.query(OperatingExpenses.name, db.func.sum(Expenses.amount)).join(Expenses).filter(
         and_(*extract_date(Expenses.date_reported, filter_date=request.args.get('filter')))).group_by(OperatingExpenses).all()
     
-    total_op_expenses = db.session.query(db.func.sum(Expenses.amount)).filter(
-        and_(*extract_date(Expenses.date_reported, filter_date=request.args.get('filter')))
-    ).first()[0] or 0
-    
     context = dict(
-        total_users=len(User.query.all()),
+        capital="{:,.2f}".format(capital),
         active_users=len(User.query.join(Payment, Payment.user_id == User.id).all()),
         net_sales=net_sales,
-        net_sales_status=float(net_sales_status),
         gross_sales=Payment.sales_data(),
         plan_data=Plan.plan_data(),
         payments=Payment.query.order_by(Payment.date_paid.desc()).limit(5).all(),
         users=User.query.join(User.payments).filter(User.is_active==True).all(),
         reports=Report.query.order_by(Report.date_reported.desc()).limit(5).all(),
         op_expenses=op_expenses,
-        total_expenses=total_op_expenses,
         expenses_data=Expenses.expenses_data(),
         )
     
@@ -98,6 +93,19 @@ def expenses_form():
         db.session.commit()
         return redirect(url_for('main.dashboard'))
     return render_template('main/expenses_form.html', form=form)
+
+@main_bp.route("/capital/form/", methods=["POST", "GET"])
+@require_login
+@admin_required
+def capital_form():
+    form = CapitalForm()
+    if form.validate_on_submit():
+        amount = form.amount.data
+        capital = Capital(amount=amount)
+        db.session.add(capital)
+        db.session.commit()
+        return redirect(url_for('main.dashboard'))
+    return render_template('main/add_capital.html', form=form)
 
 @main_bp.route("/send_report/", methods=["POST", "GET"])
 @require_login

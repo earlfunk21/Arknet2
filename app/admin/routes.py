@@ -1,7 +1,7 @@
 import datetime
 from flask import current_app
 from app.admin import admin_bp
-from app.models import Budget, Expenses, Payment, Plan, Report, SocialMedia, UserDetails, db, SecretQuestion, SecretAnswer, User, OperatingExpenses
+from app.models import Capital, Expenses, Payment, Plan, Report, SocialMedia, UserDetails, db, SecretQuestion, SecretAnswer, User, OperatingExpenses
 from sqlalchemy import extract, func, and_
 import click
 from app.utils import extract_date
@@ -112,10 +112,10 @@ def add_report():
     db.session.add(report)
     db.session.commit()
     
-@admin_bp.cli.command("add-budget")
+@admin_bp.cli.command("add-capital")
 @click.argument('amount')
 def add_budget(amount):
-    budget = Budget(amount=amount)
+    budget = Capital(amount=amount)
     db.session.add(budget)
     db.session.commit()
     

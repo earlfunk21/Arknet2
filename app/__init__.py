@@ -1,4 +1,5 @@
 from flask import Flask
+from .imagekit import FlaskImageKit
 from config import DevelopmentConfig, ProductionConfig
 
 
@@ -13,6 +14,7 @@ migrate = Migrate()
 
 sess = Session()
 captcha = FlaskSessionCaptcha()
+fik = FlaskImageKit()
 
 # Creating Application
 def create_app(config=ProductionConfig):
@@ -56,6 +58,8 @@ def extensions(app: Flask):
     sess.init_app(app)
     
     captcha.init_app(app)
+    
+    fik.init_app(app)
     
 
 def context_processor(app: Flask):

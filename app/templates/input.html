@@ -1,6 +1,6 @@
 
-{% macro render_field(field, prefix=None, suffix=None) %}
-    <div class="col-12">
+{% macro render_field(field, prefix=None, suffix=None, col='col-12') %}
+    <div class="{{ col }}">
       {{ field.label(class='form-label') }}
       <div class="input-group has-validation">
         {% if prefix %}

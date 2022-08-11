@@ -16,7 +16,8 @@ class RegistrationForm(FlaskForm):
                                             validators.Length(min=3, max=120, message="Username length must be between %(min)d and %(max)d characters"),
                                             validators.Regexp("^[A-Za-z0-9]+$", message="Username must not contain special characters")])
     password = PasswordField("Password", validators=[validators.InputRequired(),
-                                                   validators.Length(min=8, max=120, message="Password length must be between %(min)d and %(max)d characters")])
+                                                   validators.Length(min=8, max=120)],
+                             render_kw={'data-bs-toggle':"tooltip", 'data-bs-placement': "right", 'title': "Password length must be between 8 and 120 characters"})
     confirm_password = PasswordField("Confirm Password", validators=[validators.InputRequired(),
                                                                              validators.EqualTo("password", message="Password must match")])
     questions = QuerySelectField("Select a secret question", validators=[validators.InputRequired()], query_factory=question_query)
@@ -41,7 +42,8 @@ class LoginForm(FlaskForm):
 
 class UpdatePasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[validators.InputRequired(),
-                                                   validators.Length(min=8, max=120, message="Password must be at least 8 or more characters")])
+                                                   validators.Length(min=8, max=120)],
+                             render_kw={'data-bs-toggle':"tooltip", 'data-bs-placement': "right", 'title': "Password length must be between 8 and 120 characters"})
     
     confirm_password = PasswordField("Confirm Password", validators=[validators.EqualTo("password", message="Password must match")])
     answer = StringField("Your answer", validators=[validators.InputRequired()])
@@ -71,3 +73,5 @@ class UserDetailsForm(FlaskForm):
     last_name = StringField("Last Name", validators=[validators.InputRequired()])
     address = StringField("Address", validators=[validators.InputRequired()])
     phone = StringField("Phone Number", validators=[validators.InputRequired()])
+    social_media = StringField("Name", render_kw={"placeholder": "Example: Facebook"})
+    account_name = StringField("Account Name")

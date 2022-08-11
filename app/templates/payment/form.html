@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Profile Page{% endblock %}
+{% block title %}Payment Form{% endblock %}
+{% from 'input.html' import render_field %}
 
 
 {% block body %}
@@ -48,76 +49,24 @@
                     <h5 class="card-title text-center pb-0 fs-4">Payment Form</h5>
                   </div>
 
-                  <form method="post" class="row g-3 needs-validation" novalidate>
+                  <form method="post" class="row g-3 needs-validation" novalidate enctype="multipart/form-data">
                     {{ form.csrf_token }}
 
-                    <div class="col-12">
-                      {{ form.user.label(class='form-label') }}
-                      <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        {{ form.user(class="form-control" + (" is-invalid" if form.user.errors else "") ) }}
-                        {% if form.user.errors %}
-                          {% for error in form.user.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      {{ form.plan.label(class='form-label') }}
-                      {{ form.plan(class="form-control" + (" is-invalid" if form.plan.errors else "") ) }}
-                      {% if form.plan.errors %}
-                        {% for error in form.plan.errors %}
-                          <div class="invalid-feedback">{{ error }}</div>
-                        {% endfor %}
-                      {% endif %}
-                    </div>
-
+                    {{ render_field(form.user, prefix='@')}}
+                    {{ render_field(form.plan) }}
                     <div class="col-12">
                       <label class="form-check-label" for="social-media">Expired in:</label>
                       <div class="mt-2 mx-3">
                         <div class="row">
-                          <div class="col-4">
-                            {{ form.days.label(class='form-label') }}
-                            {{ form.days(class="form-control" + (" is-invalid" if form.days.errors else "") ) }}
-                            {% if form.days.errors %}
-                              {% for error in form.days.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                              {% endfor %}
-                            {% endif %}
-                          </div>
-                          <div class="col-4">
-                            {{ form.months.label(class='form-label') }}
-                            {{ form.months(class="form-control" + (" is-invalid" if form.months.errors else "") ) }}
-                            {% if form.months.errors %}
-                              {% for error in form.months.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                              {% endfor %}
-                            {% endif %}
-                          </div>
-                          <div class="col-4">
-                            {{ form.years.label(class='form-label') }}
-                            {{ form.years(class="form-control" + (" is-invalid" if form.years.errors else "") ) }}
-                            {% if form.years.errors %}
-                              {% for error in form.years.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                              {% endfor %}
-                            {% endif %}
-                          </div>
+                          {{ render_field(form.days, col='col-4')}}
+                          {{ render_field(form.months, col='col-4')}}
+                          {{ render_field(form.years, col='col-4')}}
                         </div>
                       </div>
                     </div>
-
-                    <div class="col-12">
-                      {{ form.remarks.label(class='form-label') }}
-                      {{ form.remarks(class="form-control" + (" is-invalid" if form.remarks.errors else "") , placeholder="Example: Paid") }}
-                      {% if form.remarks.errors %}
-                        {% for error in form.remarks.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                      {% endif %}
-                    </div>
+                    {{ render_field(form.remarks) }}
+                    {{ render_field(form.receipt) }}
+                    {{ render_field(form.admin_key)}}
 
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Submit</button>

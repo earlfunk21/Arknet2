@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Expenses Form{% endblock %}
+{% block title %}Add Capital{% endblock %}
 {% from 'input.html' import render_field %}
 
 
@@ -18,7 +18,7 @@
 
   <main id="main" class="main">
     <div class="pagetitle">
-      <h1>Expenses</h1>
+      <h1>Capital</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
@@ -45,13 +45,12 @@
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Add Expenses</h5>
+                    <h5 class="card-title text-center pb-0 fs-4">Add Capital</h5>
                   </div>
 
                   <form method="post" class="row g-3 needs-validation" novalidate>
                     {{ form.csrf_token }}
                     {{ render_field(form.amount, prefix="₱")}}
-                    {{ render_field(form.op_expenses) }}
                     {{ render_field(form.admin_key)}}
 
                     <div class="col-12">

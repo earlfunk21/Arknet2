@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Register Page{% endblock %}
+{% from 'input.html' import render_field %}
 
 
 {% block body %}
@@ -27,56 +28,11 @@
 
                   <form method="post" class="row g-3 needs-validation" novalidate>
                     {{ form.csrf_token }}
-
-                    <div class="col-12">
-                      {{ form.first_name.label }}
-                        {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "") ) }}
-                        {% if form.first_name.errors %}
-                          {% for error in form.first_name.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                    </div>
-
-                    <div class="col-12">
-                      {{ form.middle_name.label }}
-                        {{ form.middle_name(class="form-control" + (" is-invalid" if form.middle_name.errors else "") ) }}
-                        {% if form.middle_name.errors %}
-                          {% for error in form.middle_name.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                    </div>
-
-                    <div class="col-12">
-                      {{ form.last_name.label }}
-                        {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "") ) }}
-                        {% if form.last_name.errors %}
-                          {% for error in form.last_name.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                    </div>
-
-                    <div class="col-12">
-                      {{ form.address.label }}
-                        {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else "") ) }}
-                        {% if form.address.errors %}
-                          {% for error in form.address.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                    </div>
-
-                    <div class="col-12">
-                      {{ form.phone.label }}
-                        {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "") ) }}
-                        {% if form.phone.errors %}
-                          {% for error in form.phone.errors %}
-                            <div class="invalid-feedback">{{ error }}</div>
-                          {% endfor %}
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.first_name) }}
+                    {{ render_field(form.middle_name) }}
+                    {{ render_field(form.last_name) }}
+                    {{ render_field(form.address) }}
+                    {{ render_field(form.phone) }}
 
                     <div class="col-12">
                       <div class="form-check">
@@ -84,14 +40,8 @@
                         <label class="form-check-label" for="social-media">Social Media</label>
                         <div class="mt-2" id="social-media">
                           <div class="row">
-                            <div class="col-12 mb-3">
-                              <label for="company" class="form-label">Company Name</label>
-                              <input type="text" name="company" class="form-control" id="company" placeholder="Example: Facebook">
-                            </div>
-                            <div class="col-12 mb-3">
-                              <label for="account_name" class="form-label">Account</label>
-                              <input type="text" name="account_name" class="form-control" id="account_name" placeholder="Example: User">
-                            </div>
+                            {{ render_field(form.social_media, col='col-12 mb-3') }}
+                            {{ render_field(form.account_name, col='col-12 mb-3') }}
                           </div>
                         </div>
                       </div>

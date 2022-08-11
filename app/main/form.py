@@ -17,6 +17,15 @@ class ExpensesForm(FlaskForm):
         if field.data != current_app.config.get('ADMIN_KEY'):
             raise validators.ValidationError(f"Secret key is incorrect")
         
+class CapitalForm(FlaskForm):
+    amount = FloatField("Amount of Expenses")
+    
+    admin_key = PasswordField("Secret Key", validators=[validators.InputRequired()])
+    
+    def validate_admin_key(form, field):
+        if field.data != current_app.config.get('ADMIN_KEY'):
+            raise validators.ValidationError(f"Secret key is incorrect")
+        
 class ReportForm(FlaskForm):
     subject = StringField("Subject", validators=[validators.DataRequired()])
     message = TextAreaField("Message")

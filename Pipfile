@@ -18,6 +18,7 @@ captcha = "*"
 flask-sessionstore = "*"
 flask-session-captcha = "*"
 gunicorn = "*"
+imagekitio = "*"
 
 [dev-packages]
 
