@@ -18,7 +18,7 @@ def login():
         user = authenticate(username, password)
         if user:
             login_user(user)
-            flash("Successful Login", "success")
+            flash("Successfully Login", "success")
             return redirect(url_for('main.profile'))
         form.password.errors.append("Password is incorrect")
     return render_template("auth/login.html", form=form)
@@ -28,7 +28,7 @@ def login():
 @require_login
 def logout():
     logout_user()
-    flash("Successful", "success")
+    flash("Successfully Logout", "success")
     return redirect(url_for("auth.login"))
 
 
@@ -112,6 +112,6 @@ def update_password(token):
         user.password = password
         user.last_modified = db.func.now()
         db.session.commit()
-        flash("Successful", "success")
+        flash("Password updated successfully", "success")
         return redirect(url_for('auth.logout'))
     return render_template("auth/update_password.html", form=form, question=user.secret_answer.secret_question)

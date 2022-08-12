@@ -2,8 +2,7 @@ import datetime
 from app.models import Payment, User, db
 from app.payment import payment_bp
 from app.payment.forms import PaymentForm
-from flask import render_template, abort, request
-from werkzeug.utils import secure_filename
+from flask import render_template, abort, request, redirect, url_for, flash
 from app.auth.utils import admin_required, load_user, require_login
 from sqlalchemy import or_
 from app.utils import loads_token
@@ -23,14 +22,16 @@ def payment_form():
         years = form.years.data * 365
         user = form.user.data
         file = form.receipt.data
-        due_date = datetime.datetime.now() + datetime.timedelta(days=days + months + years)
+        days_expired = days + months + years
+        due_date = datetime.datetime.now() + datetime.timedelta(days=days_expired)
         if user.recent_payment:
-            due_date = user.recent_payment.due_date + datetime.timedelta(days=days + months + years)
+            due_date = user.recent_payment.due_date + datetime.timedelta(days=days_expired)
         payment = Payment(remarks=remarks,
                           due_date=due_date,
                           plan=plan,
                           user=user,
-                          received_by=load_user())
+                          received_by=load_user(),
+                          amount=(days_expired / plan.days) * plan.price)
         response = None
         if file:
             response = fik.upload(file)
@@ -40,8 +41,10 @@ def payment_form():
             payment.receipt_id = response['fileId']
         db.session.add(payment)
         db.session.commit()
-        return "Submitted"
+        flash("Successfully Added!", 'success')
+        return redirect(url_for('admin.payment.payment_table'))
     return render_template('payment/form.html', form=form)
+
 
 @payment_bp.route("/")
 @payment_bp.route("/page/<int:page>")

@@ -54,8 +54,8 @@
 
                     {{ render_field(form.user, prefix='@')}}
                     {{ render_field(form.plan) }}
-                    <div class="col-12">
-                      <label class="form-check-label" for="social-media">Expired in:</label>
+                    <div class="col-12" id="expired_in">
+                      <label class="form-check-label">Expired in:</label>
                       <div class="mt-2 mx-3">
                         <div class="row">
                           {{ render_field(form.days, col='col-4')}}
@@ -64,15 +64,49 @@
                         </div>
                       </div>
                     </div>
+                    <div class="col-12">
+                      <label for="total_payment" class="form-label">Total Payment</label>
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend">₱</span>
+                        <div id="total_payment" class="form-control"></div>
+                      </div>
+                    </div>
                     {{ render_field(form.remarks) }}
                     {{ render_field(form.receipt) }}
-                    {{ render_field(form.admin_key)}}
+                    {{ render_field(form.admin_key) }}
 
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Submit</button>
                     </div>
-                  </form>
 
+                    <script>
+                      $(document).ready(function(){
+                          var plan = null;
+                          $('#expired_in').hide();
+                          $('#plan').on('change', function(){
+                            $.getJSON('{{url_for("main.all_plans")}}', function(data){
+                              $.each(data, function(index){
+                                if(data[index].id === Number($('#plan').val())){
+                                  plan = data[index];
+                                  $('#expired_in').show();
+                                }
+                              });
+                            });
+                            if($(this).val() == '__None'){
+                              $('#expired_in').hide();
+                            }
+                          });
+                          $("input[type='number']").on("keyup", function(){
+                              let days = Number($('#days').val());
+                              let months = Number($('#months').val()) * 30;
+                              let years = Number($('#years').val()) * 365;
+                              $("#total_payment").text((((days + months + years)/ plan.days) * plan.price).toFixed(2));
+                          });
+                      });
+                      </script>
+                      
+
+                  </form>
                 </div>
               </div>
             </div>

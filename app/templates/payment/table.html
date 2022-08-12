@@ -14,7 +14,7 @@
    {% include 'includes/sidenav.html' %}
 
 <main id="main" class="main">
-
+  {% include 'message.html' %}
     <div class="pagetitle">
       <h1>Payment</h1>
       <nav>
@@ -39,10 +39,11 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th scope="col">#</th>
                       <th scope="col">User</th>
+                      <th scope="col">Amount</th>
                       <th scope="col">Plan</th>
                       <th scope="col">Date Paid</th>
+                      <th scope="col">Due Date</th>
                       <th scope="col">Received by</th>
                       <th scope="col">Receipt</th>
                       <th scope="col">Remarks</th>
@@ -51,10 +52,11 @@
                   <tbody>
                     {% for payment in payments.items %}
                       <tr>
-                          <td>{{ payment.id }}</td>
                           <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(payment.user.username, salt='username')) }}">{{ payment.user }}</a></td>
+                          <td>{{ '{:,.2f}'.format(payment.amount) }}</td>
                           <td>{{ payment.plan.price }}</td>
                           <td>{{ payment.date_paid.strftime("%d %B %Y, %I:%M %p") }}</td>
+                          <td>{{ payment.due_date.strftime("%d %B %Y, %I:%M %p") }}</td>
                           <td>{{ payment.received_by }}</td>
                           {% if payment.receipt %}
                             <td><a href="{{ payment.receipt }}">link</a></td>

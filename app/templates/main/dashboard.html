@@ -36,14 +36,14 @@
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
                 <div class="card-body">
-                  <h5 class="card-title">On Hand Capital</h5>
+                  <h5 class="card-title">Total Subscribers</h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                       <i class="bi bi-cash-coin"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>{{ capital }}</h6>
+                      <h6>{{ total_users }}</h6>
                     </div>
                   </div>
                 </div>
@@ -87,14 +87,14 @@
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title">Net Sales <span>| This {{ request.args.get('filter', 'Month') }}</span></h5>
+                  <h5 class="card-title">Gross Sales <span>| This {{ request.args.get('filter', 'Month') }}</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                       <i class="bi bi-cash-coin"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>{{ "{:,.2f}".format(net_sales) }}</h6>
+                      <h6>{{ "{:,.2f}".format(total_gross_sales) }}</h6>
                     </div>
                   </div>
 
@@ -120,7 +120,7 @@
                           name: 'Sales',
                           data: [
                             {% for gross_value in gross_sales %}
-                              "{{ gross_value[1] }}",
+                              "{{ '%.2f' % gross_value[1] | float }}",
                             {% endfor %}
                           ]
                         }],
@@ -155,7 +155,7 @@
                           type: 'datetime',
                           categories: [
                             {% for gross_value in gross_sales %}
-                              "{{ gross_value[0].date_paid }}",
+                              "{{ gross_value[0] }}",
                             {% endfor %}
                           ]
                         },
@@ -291,18 +291,8 @@
 
           <div class="col-lg">
             <div class="card">
-              <div class="filter">
-                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                  <li class="dropdown-header text-start">
-                    <h6>Filter</h6>
-                  </li>
-                  <li><a class="dropdown-item" href="{{ url_for(request.endpoint) }}">This Month</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for(request.endpoint, filter='Year') }}">This Year</a></li>
-                </ul>
-              </div>
               <div class="card-body">
-                <h5 class="card-title">Expenses Data <span>| This {{ request.args.get('filter', 'Month') }}</span></h5>
+                <h5 class="card-title">Subscribed Every month</h5>
   
                 <!-- Bar Chart -->
                 <div id="barChart"></div>
@@ -312,7 +302,7 @@
                     new ApexCharts(document.querySelector("#barChart"), {
                       series: [{
                         data: [
-                          {% for data in op_expenses %}
+                          {% for data in user_created_on %}
                             "{{ data[1] }}",
                           {% endfor %}
                         ]
@@ -332,8 +322,8 @@
                       },
                       xaxis: {
                         categories: [
-                        {% for data in op_expenses %}
-                          "{{ data[0] }}",
+                        {% for data in user_created_on %}
+                          "{{ data[0].strftime('%B') }}",
                         {% endfor %}
                         ],
                       }
@@ -344,6 +334,7 @@
               </div>
             </div>
           </div>
+
 
           <!-- Website Traffic -->
           <div class="card">

@@ -1,10 +1,10 @@
 import datetime
 from flask import current_app
 from app.admin import admin_bp
-from app.models import Capital, Expenses, Payment, Plan, Report, SocialMedia, UserDetails, db, SecretQuestion, SecretAnswer, User, OperatingExpenses
-from sqlalchemy import extract, func, and_
+from app.models import Payment, Plan, Report, SocialMedia, UserDetails, db, SecretQuestion, SecretAnswer, User
 import click
-from app.utils import extract_date
+
+from ..utils import extract_date
 
 
 @admin_bp.cli.command("create-all")
@@ -28,9 +28,9 @@ def init():
     secret_question = SecretQuestion.query.get(current_app.config.get("SECRET_QUESTION_ID"))
     secret_answer = SecretAnswer(answer=current_app.config.get("SECRET_ANSWER"), secret_question=secret_question)
     
-    plan1 = Plan(price=1500, speed=50)
-    plan2 = Plan(price=2500, speed=100)
-    plan3 = Plan(price=500, speed=15)
+    plan1 = Plan(price=1500, speed=50, days=30)
+    plan2 = Plan(price=2500, speed=100, days=30)
+    plan3 = Plan(price=500, speed=15, days=30)
     db.session.add_all([plan1, plan2, plan3])
     
     social_media = SocialMedia(name="facebook", account_name="user@test")
@@ -39,18 +39,7 @@ def init():
     
     user = User(username="admin", password="admin123", secret_answer=secret_answer, is_admin=True, user_details=user_details)
     db.session.add(user)
-    
-    op_expenses1 = OperatingExpenses(name="Equipment")
-    op_expenses2 = OperatingExpenses(name="Office Supply")
-    op_expenses3 = OperatingExpenses(name="Rent")
-    op_expenses4 = OperatingExpenses(name="Repair")
-    op_expenses5 = OperatingExpenses(name="Utility")
-    op_expenses6 = OperatingExpenses(name="Manpower")
-    op_expenses7 = OperatingExpenses(name="Marketing")
-    op_expenses8 = OperatingExpenses(name="Other")
-    
-    db.session.add_all([op_expenses1, op_expenses2, op_expenses3, op_expenses4, op_expenses5, op_expenses6, op_expenses7, op_expenses8])
-    
+
     db.session.commit()
 
 
@@ -82,48 +71,18 @@ def test():
     
     print(user.current_payment)
     
+    print("________")
+
+    print(db.session.query(Payment, db.func.sum(Payment.amount)).group_by(Payment.date_paid).all())
     
     print("________")
     
-    payments = db.session.query(db.func.sum(Plan.price)).join(Payment).filter(
-        and_(*extract_date(Payment.date_paid, filter_date='Month'))).first()
-    print(payments)
-    
-    print("________")
-    
-    print(Payment.total_sales())
+    print(db.session.query(User.created_on, db.func.count(User.id)).group_by(*extract_date(User.created_on, 'Month')).all())
 
-@admin_bp.cli.command("add-operating-expenses")
-@click.argument('expenses')
-def add_operating_expenses(expenses):
-    operating_expenses = OperatingExpenses(name=expenses)
-    db.session.add(operating_expenses)
-    db.session.commit()
 
-    
-@admin_bp.cli.command("test2")
-def test2():
-    print(sum(db.session.query(db.func.sum(Expenses.amount)).first()))
-    
 @admin_bp.cli.command("add-report")
 def add_report():
     user = User.query.get(1)
     report = Report(user=user, subject="Matud nako", message="Yawa ka lag baya ani oy Yawa ka lag baya ani oy Yawa ka lag baya ani oy Yawa ka lag baya ani oy")
     db.session.add(report)
     db.session.commit()
-    
-@admin_bp.cli.command("add-capital")
-@click.argument('amount')
-def add_budget(amount):
-    budget = Capital(amount=amount)
-    db.session.add(budget)
-    db.session.commit()
-    
-@admin_bp.cli.command("add-expenses")
-@click.argument('amount')
-@click.argument('id')
-def add_expenses(amount, id):
-    expenses = Expenses(amount=amount, operating_expenses_id=id)
-    db.session.add(expenses)
-    db.session.commit()
-    

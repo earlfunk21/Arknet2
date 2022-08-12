@@ -1,9 +1,9 @@
 import datetime
-from flask import abort, render_template, request, redirect, url_for
+from flask import abort, render_template, request, redirect, url_for, flash, jsonify
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
-from app.main.form import CapitalForm, ExpensesForm, ReportForm
-from app.models import Capital, Expenses, OperatingExpenses, Payment, Plan, Report, User, UserDetails
+from app.main.form import ReportForm
+from app.models import Payment, Plan, Report, User
 from app.main import main_bp
 from sqlalchemy import and_
 
@@ -15,30 +15,18 @@ from app.models import db
 @require_login
 @admin_required
 def dashboard():
-    gross_sales = db.session.query(db.func.sum(Plan.price)).join(Payment).filter(
-        and_(*extract_date(Payment.date_paid, filter_date=request.args.get('filter')))).first()[0] or 0
-    
-    capital = Capital.onhand_capital()
-    
-    net_sales = gross_sales
-    if capital < 0:
-        net_sales = net_sales + capital
-        capital = 0
-    
-    op_expenses = db.session.query(OperatingExpenses.name, db.func.sum(Expenses.amount)).join(Expenses).filter(
-        and_(*extract_date(Expenses.date_reported, filter_date=request.args.get('filter')))).group_by(OperatingExpenses).all()
-    
+    total_gross_sales = db.session.query(db.func.sum(Payment.amount)).filter(*extract_date(Payment.date_paid, filter_date=request.args.get('filter', 'Month'))).first()[0] or 0
+
     context = dict(
-        capital="{:,.2f}".format(capital),
-        active_users=len(User.query.join(Payment, Payment.user_id == User.id).all()),
-        net_sales=net_sales,
-        gross_sales=Payment.sales_data(),
-        plan_data=Plan.plan_data(),
+        user_created_on = db.session.query(User.created_on, db.func.count(User.created_on)).group_by(*extract_date(User.created_on, 'Month')).all(),
+        total_users=len(User.query.all()),
+        active_users=len(User.query.join(User.payments).filter(User.is_active==True).all()),
+        total_gross_sales = total_gross_sales,
+        gross_sales = db.session.query(Payment.date_paid, db.func.sum(Payment.amount)).group_by(*extract_date(Payment.date_paid, 'Month')).all(),
+        plan_data=db.session.query(Plan, db.func.count(Payment.id)).join(Plan).group_by(Plan.id).all(),
         payments=Payment.query.order_by(Payment.date_paid.desc()).limit(5).all(),
         users=User.query.join(User.payments).filter(User.is_active==True).all(),
         reports=Report.query.order_by(Report.date_reported.desc()).limit(5).all(),
-        op_expenses=op_expenses,
-        expenses_data=Expenses.expenses_data(),
         )
     
     return render_template('main/dashboard.html', **context)
@@ -65,8 +53,23 @@ def profile(token):
         user.user_details.social_media.name = company
         user.user_details.social_media.account_name = account_name
         db.session.commit()
-        
+        flash('Successfully Edited', 'success')
+        return redirect(request.url)
     return render_template("main/profile.html", user=user)
+
+
+@main_bp.route('/plans/')
+def all_plans():
+    plans = Plan.query.all()
+    plans_lists = []
+    for plan in plans:
+        plans_lists.append(dict(
+            id=plan.id,
+            price=plan.price,
+            speed=plan.speed,
+            days=plan.days
+        ))
+    return jsonify(*plans_lists)
 
 
 @main_bp.route("/reports/", defaults={'page': 1})
@@ -80,32 +83,6 @@ def report_lists(page):
     )
     return render_template('main/reports.html', **context)
 
-@main_bp.route("/expenses/form/", methods=["POST", "GET"])
-@require_login
-@admin_required
-def expenses_form():
-    form = ExpensesForm()
-    if form.validate_on_submit():
-        amount = form.amount.data
-        op_expenses = form.op_expenses.data
-        expenses = Expenses(amount=amount, operating_expenses=op_expenses)
-        db.session.add(expenses)
-        db.session.commit()
-        return redirect(url_for('main.dashboard'))
-    return render_template('main/expenses_form.html', form=form)
-
-@main_bp.route("/capital/form/", methods=["POST", "GET"])
-@require_login
-@admin_required
-def capital_form():
-    form = CapitalForm()
-    if form.validate_on_submit():
-        amount = form.amount.data
-        capital = Capital(amount=amount)
-        db.session.add(capital)
-        db.session.commit()
-        return redirect(url_for('main.dashboard'))
-    return render_template('main/add_capital.html', form=form)
 
 @main_bp.route("/send_report/", methods=["POST", "GET"])
 @require_login
@@ -117,5 +94,6 @@ def send_report():
         report = Report(subject=subject, message=message, user=load_user())
         db.session.add(report)
         db.session.commit()
+        flash("Successfully Reported!", "success")
         return redirect(url_for('main.profile'))
     return render_template('main/report_form.html', form=form)

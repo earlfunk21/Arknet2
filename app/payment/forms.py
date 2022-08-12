@@ -8,8 +8,8 @@ from flask import current_app
 
 class PaymentForm(FlaskForm):
     remarks = TextAreaField("Remarks")
-    plan = QuerySelectField("Plans", query_factory=lambda: Plan.query)
-    user = QuerySelectField("Users", query_factory=lambda: User.query, get_label='username')
+    plan = QuerySelectField("Plans", query_factory=lambda: Plan.query, allow_blank=True, validators=[validators.DataRequired()])
+    user = QuerySelectField("Users", query_factory=lambda: User.query, get_label='username', allow_blank=True, validators=[validators.DataRequired()])
     days = IntegerField("Days", default=0)
     months = IntegerField("Months", default=0)
     years = IntegerField("Years", default=0)

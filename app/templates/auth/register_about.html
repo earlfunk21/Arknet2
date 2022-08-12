@@ -56,8 +56,8 @@
                               $('#account_name').attr('required', 'required');
                           } else {
                               $('#social-media').hide();
-                              $('#company').attr('required', 'required');
-                              $('#account_name').attr('required', 'required');
+                              $('#company').removeAttr('required', 'required');
+                              $('#account_name').removeAttr('required', 'required');
                           }
                       });
                     </script>

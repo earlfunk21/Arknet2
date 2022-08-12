@@ -7,6 +7,7 @@ class CreatePlanForm(FlaskForm):
     
     price = IntegerField("Price", validators=[validators.InputRequired()])
     speed = IntegerField("Speed", validators=[validators.InputRequired()])
+    days = IntegerField("Days Expired", validators=[validators.InputRequired()], default=30)
     admin_key = PasswordField("Secret Key", validators=[validators.InputRequired()])
     
     def validate_admin_key(form, field):

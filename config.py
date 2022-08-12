@@ -13,7 +13,7 @@ class Config(object):
     SECRET_ANSWER = os.getenv("SECRET_ANSWER")
     
     ADMIN_KEY = os.getenv("ADMIN_KEY")
-    CAPTCHA_ENABLE = True
+    
     CAPTCHA_LENGTH = 5
     CAPTCHA_SESSION_KEY = 'captcha_image'
     SESSION_TYPE = 'sqlalchemy'
@@ -24,7 +24,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    
+    CAPTCHA_ENABLE = False
     # SQLALCHEMY
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'+os.path.join(basedir, 'dev-data.db')
 
@@ -32,4 +32,5 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.db')
+    CAPTCHA_ENABLE = True
     

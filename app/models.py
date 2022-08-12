@@ -110,13 +110,13 @@ class Plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Integer, nullable=False)
     speed = db.Column(db.Integer, nullable=False)
+    days = db.Column(db.Integer, nullable=False)
 
     def __str__(self):
         return f"{self.price} - {self.speed} mbps"
     
-    @classmethod
-    def plan_data(cls):
-        return db.session.query(Plan, db.func.count(Payment.id)).join(Plan).group_by(Plan.id).all()
+    def __repr__(self) -> str:
+        return f"{self.price} - {self.speed} mbps"
 
 
 class Payment(db.Model):
@@ -127,6 +127,7 @@ class Payment(db.Model):
                          default=datetime.datetime.now() + datetime.timedelta(days=30))
     receipt = db.Column(db.String(255), unique=True)
     receipt_id = db.Column(db.Integer, unique=True)
+    amount = db.Column(db.Float, nullable=False)
 
     # relationships
     received_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -146,19 +147,6 @@ class Payment(db.Model):
     def is_expired(self):
         return self.due_date < datetime.datetime.now()
     
-    @classmethod
-    def sales_data(cls):
-        return db.session.query(Payment,
-                         db.func.sum(Plan.price)).\
-                             join(Plan).\
-                                 group_by(extract('month', Payment.date_paid),
-                                          extract('year', Payment.date_paid)).\
-                                     order_by(Payment.date_paid).all()
-    
-    @classmethod
-    def total_sales(cls):
-        return db.session.query(db.func.sum(Plan.price)).join(Payment).first()[0] or 0
-
         
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -172,43 +160,3 @@ class Report(db.Model):
 
     def __str__(self) -> str:
         return self.subject[:5]
-
-
-class OperatingExpenses(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-
-
-class Expenses(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(db.Float, nullable=False)
-    operating_expenses_id = db.Column(db.Integer, db.ForeignKey("operating_expenses.id", ondelete="CASCADE"))
-    operating_expenses = db.relationship("OperatingExpenses", backref='expenses')
-    date_reported = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now())
-
-    @classmethod
-    def total_expenses(self):
-        return db.session.query(db.func.sum(Expenses.amount)).first()[0] or 0
-    
-    @classmethod
-    def expenses_data(self):
-        return db.session.query(OperatingExpenses.name,
-                         db.func.sum(Expenses.amount)).\
-                             join(Expenses).\
-                                 group_by(OperatingExpenses).\
-                                     order_by(db.func.sum(Expenses.amount)).all()
-    
-    
-class Capital(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    amount = db.Column(db.Float, nullable=False)
-    date_added = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now())
-    
-    @classmethod
-    def total_capital(cls):
-        return db.session.query(db.func.sum(Capital.amount)).first()[0] or 0
-    
-    @classmethod
-    def onhand_capital(cls):
-        return cls.total_capital() - Expenses.total_expenses()
-

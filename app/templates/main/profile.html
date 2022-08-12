@@ -16,7 +16,7 @@
 
 
   <main id="main" class="main">
-
+    {% include 'message.html' %}
     <div class="pagetitle">
       <h1>Profile</h1>
       <nav>
@@ -135,7 +135,7 @@
 
                   <div class="row ps-3">
                     <div class="col-lg-3 col-md-4 label">Company name</div>
-                    <div class="col-lg-9 col-md-8">{{ user.user_details.social_media.company }}</div>
+                    <div class="col-lg-9 col-md-8">{{ user.user_details.social_media.name }}</div>
                   </div>
 
                   <div class="row ps-3">
@@ -180,7 +180,7 @@
                     <div class="row mb-3">
                       <label for="company" class="col-md-4 col-lg-3 col-form-label">Social Media</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="company" type="text" class="form-control" id="company" value='{{ user.user_details.social_media.company }}'>
+                        <input name="company" type="text" class="form-control" id="company" value='{{ user.user_details.social_media.name }}'>
                       </div>
                       </div>
                       <div class="row mb-3">
