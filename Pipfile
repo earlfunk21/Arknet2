@@ -13,10 +13,9 @@ python-dotenv = "*"
 flask-migrate = "*"
 timeago = "*"
 captcha = "*"
-flask-sessionstore = "*"
-flask-session-captcha = "*"
 gunicorn = "*"
 imagekitio = "*"
+flask-session = "*"
 
 [dev-packages]
 

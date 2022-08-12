@@ -14,12 +14,16 @@ class Config(object):
     
     ADMIN_KEY = os.getenv("ADMIN_KEY")
     
-    CAPTCHA_LENGTH = 5
-    CAPTCHA_SESSION_KEY = 'captcha_image'
     SESSION_TYPE = 'sqlalchemy'
+    
     FIK_PRIVATE_KEY=os.getenv("FIK_PRIVATE_KEY")
     FIK_PUBLIC_KEY=os.getenv("FIK_PUBLIC_KEY")
     FIK_URL_ENDPOINT=os.getenv("FIK_URL_ENDPOINT")
+    
+    FLASK_CAPTCHA_LENGTH = 5
+    FLASK_CAPTCHA_KEY = os.getenv("FLASK_CAPTCHA_KEY")
+    FLASK_CAPTCHA_HEIGHT = 90
+    FLASK_CAPTCHA_WIDTH = 280
     
 
 class DevelopmentConfig(Config):

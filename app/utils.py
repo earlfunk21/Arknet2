@@ -29,5 +29,5 @@ def time_ago(date):
 
 
 def captcha_validator(form, field):
-    if not captcha.validate():
+    if not captcha.validate(field.data):
         raise ValidationError('Invalid Captcha')

@@ -32,10 +32,11 @@
                     {{ form.csrf_token }}
                     {{ render_field(form.username, prefix='@' )}}
                     {{ render_field(form.password) }}
-                    <div class="col-12" id="captcha-div">
-                      {{ captcha(css_class="captcha") }}
+                    <div class="col-12">
+                      {% include 'captcha.html' %}
                     </div>
                     {{ render_field(form.captcha) }}
+
 
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Login</button>

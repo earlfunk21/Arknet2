@@ -1,23 +1,21 @@
 from flask import Flask
-from .imagekit import FlaskImageKit
+from .extensions.flask_captcha import FlaskCaptcha
+from app.extensions.imagekit import FlaskImageKit
 from config import DevelopmentConfig, ProductionConfig
+from flask_session import Session
 
 
 # Extensions
 from app.models import db
 from flask_migrate import Migrate
-from flask_sessionstore import Session
-from flask_session_captcha import FlaskSessionCaptcha
 
 
 migrate = Migrate()
-
-sess = Session()
-captcha = FlaskSessionCaptcha()
+captcha = FlaskCaptcha()
 fik = FlaskImageKit()
 
 # Creating Application
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
     
@@ -54,9 +52,8 @@ def extensions(app: Flask):
     
     migrate.init_app(app, db)
     migrate.app = app
-    
-    sess.init_app(app)
-    
+
+    Session(app)
     captcha.init_app(app)
     
     fik.init_app(app)
