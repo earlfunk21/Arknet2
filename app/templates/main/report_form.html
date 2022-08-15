@@ -53,7 +53,7 @@
                     {{ render_field(form.subject)}}
                     {{ render_field(form.message) }}
                     <div class="col-12">
-                      {% include 'captcha.html' %}
+                      {{ captcha() }}
                     </div>
                     {{ render_field(form.captcha)}}
 

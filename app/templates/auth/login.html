@@ -33,7 +33,7 @@
                     {{ render_field(form.username, prefix='@' )}}
                     {{ render_field(form.password) }}
                     <div class="col-12">
-                      {% include 'captcha.html' %}
+                      {{ captcha() }}
                     </div>
                     {{ render_field(form.captcha) }}
 

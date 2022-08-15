@@ -1,10 +1,8 @@
 import datetime
-from decimal import Decimal
-from enum import unique
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import extract
+from sqlalchemy import desc
 
 db = SQLAlchemy()
 
@@ -20,7 +18,8 @@ class SecretQuestion(db.Model):
 class SecretAnswer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(255), nullable=False)
-    secret_question_id = db.Column(db.Integer, db.ForeignKey("secret_question.id"), nullable=False)
+    secret_question_id = db.Column(db.Integer, db.ForeignKey(
+        "secret_question.id"), nullable=False)
     secret_question = db.relationship("SecretQuestion")
 
 
@@ -28,17 +27,21 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), nullable=False, unique=True)
     _password = db.Column(db.String(120), nullable=False)
-    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
-    last_modified = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.now())
+    created_on = db.Column(db.DateTime(timezone=True),
+                           server_default=db.func.now())
+    last_modified = db.Column(db.DateTime(
+        timezone=True), nullable=False, server_default=db.func.now())
     last_login = db.Column(db.DateTime(timezone=True))
     is_admin = db.Column(db.Boolean, default=False)
 
     # relationships
-    secret_answer_id = db.Column(db.Integer, db.ForeignKey("secret_answer.id", ondelete="CASCADE"), nullable=False)
+    secret_answer_id = db.Column(db.Integer, db.ForeignKey(
+        "secret_answer.id", ondelete="CASCADE"), nullable=False)
     secret_answer = db.relationship("SecretAnswer", backref=db.backref("user", uselist=False, cascade="all, delete",
                                                                        passive_deletes=True))
 
-    user_details_id = db.Column(db.Integer, db.ForeignKey("user_details.id", ondelete="CASCADE"), nullable=False)
+    user_details_id = db.Column(db.Integer, db.ForeignKey(
+        "user_details.id", ondelete="CASCADE"), nullable=False)
     user_details = db.relationship("UserDetails", backref=db.backref("user", uselist=False, cascade="all, delete",
                                                                      passive_deletes=True))
 
@@ -58,20 +61,21 @@ class User(db.Model):
 
     @property
     def recent_payment(self):
-        return Payment.query.join(User.payments).order_by(Payment.date_paid.desc()).first()
+        return Payment.query.join(User.payments).order_by(db.desc(Payment.date_paid)).first()
 
     @property
     def current_payment(self):
-        return Payment.query.order_by(Payment.due_date.asc()).filter(Payment.user_id==self.id).filter(Payment.is_expired == False).first()
+        return Payment.query.order_by(db.asc(Payment.due_date)).filter(Payment.user_id == self.id).filter(
+            Payment.is_expired == False).first()
 
     @hybrid_property
     def is_active(self):
         return User.query.join(Payment, Payment.is_expired == False).first()
 
     @is_active.expression
-    def is_active(cls):
+    def is_active(self):
         return Payment.is_expired == False
-    
+
     @property
     def due_date(self):
         return self.current_payment.due_date or None
@@ -87,7 +91,8 @@ class UserDetails(db.Model):
     about = db.Column(db.String(255))
 
     # relationships
-    social_media_id = db.Column(db.Integer, db.ForeignKey("social_media.id", ondelete="CASCADE"), nullable=False)
+    social_media_id = db.Column(db.Integer, db.ForeignKey(
+        "social_media.id", ondelete="CASCADE"), nullable=False)
     social_media = db.relationship("SocialMedia",
                                    backref=db.backref("user_details", uselist=False, cascade="all, delete",
                                                       passive_deletes=True))
@@ -114,7 +119,7 @@ class Plan(db.Model):
 
     def __str__(self):
         return f"{self.price} - {self.speed} mbps"
-    
+
     def __repr__(self) -> str:
         return f"{self.price} - {self.speed} mbps"
 
@@ -122,7 +127,8 @@ class Plan(db.Model):
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     remarks = db.Column(db.String(80))
-    date_paid = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    date_paid = db.Column(db.DateTime(timezone=True),
+                          server_default=db.func.now())
     due_date = db.Column(db.DateTime(timezone=True), nullable=False,
                          default=datetime.datetime.now() + datetime.timedelta(days=30))
     receipt = db.Column(db.String(255), unique=True)
@@ -130,33 +136,39 @@ class Payment(db.Model):
     amount = db.Column(db.Float, nullable=False)
 
     # relationships
-    received_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    received_by_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=False)
     received_by = db.relationship("User", foreign_keys=[received_by_id])
 
-    plan_id = db.Column(db.Integer, db.ForeignKey("plan.id", ondelete="CASCADE"))
+    plan_id = db.Column(db.Integer, db.ForeignKey(
+        "plan.id", ondelete="CASCADE"))
     plan = db.relationship("Plan", backref='payment')
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "user.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", backref=db.backref("payments", cascade="all, delete", passive_deletes=True),
                            foreign_keys=[user_id])
-    
+
     def __str__(self) -> str:
         return str(self.plan)
 
     @hybrid_property
     def is_expired(self):
         return self.due_date < datetime.datetime.now()
-    
-        
+
+
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(80), nullable=False)
     message = db.Column(db.String(80), nullable=False)
-    date_reported = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now())
+    date_reported = db.Column(db.DateTime(
+        timezone=True), default=datetime.datetime.now())
 
     # relationships
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    user = db.relationship("User", backref=db.backref("reports", cascade="all, delete", passive_deletes=True))
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "user.id", ondelete="CASCADE"), nullable=False)
+    user = db.relationship("User", backref=db.backref(
+        "reports", cascade="all, delete", passive_deletes=True))
 
     def __str__(self) -> str:
         return self.subject[:5]
