@@ -14,7 +14,7 @@
    {% include 'includes/sidenav.html' %}
 
 <main id="main" class="main">
-
+  {% include 'message.html' %}
     <div class="pagetitle">
       <h1>Dashboard</h1>
       <nav>
@@ -247,8 +247,8 @@
                             <td class="txt-oflo">{{ user.id }}</td>
                             <td class="txt-oflo"><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(user.username, salt='username')) }}">{{ user }}</a></td>
                             <td>{{ user.current_payment }}</td>
-                            <td class="txt-oflo">{{ user.due_date.strftime("%d %B %Y, %I:%M %p") }}</td>
-                            {% if user.is_active %}
+                            <td class="txt-oflo">{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else "Inactive" }}</td>
+                            {% if user.current_payment %}
                                 <td class="text-success">Active</td>
                             {% else %}
                                 <td class="text-danger">Inactive</td>
@@ -292,7 +292,7 @@
           <div class="col-lg">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Subscribed Every month</h5>
+                <h5 class="card-title">Registered Every month</h5>
   
                 <!-- Bar Chart -->
                 <div id="barChart"></div>

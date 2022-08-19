@@ -28,7 +28,7 @@ def dashboard():
 
     # Total active users
     active_users = len(
-        User.query.join(User.payments).filter(User.is_active == True).all()
+        User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).all()
     )
 
     # Total Gross Sales
@@ -64,7 +64,7 @@ def dashboard():
         ).limit(5).all()
 
     # Lists of Users
-    users = User.query.join(User.payments).filter(User.is_active == True).all()
+    users = User.query.all()
 
     # Lists of Reports
     reports = Report.query.order_by(Report.date_reported.desc()).limit(5).all()
@@ -147,3 +147,17 @@ def send_report():
         flash("Successfully Reported!", "success")
         return redirect(url_for("main.profile"))
     return render_template("main/report_form.html", form=form)
+
+
+@main_bp.route("/user_is_admin/<int:user_id>/<int:is_admin>/")
+@require_login
+@admin_required
+def is_admin(user_id, is_admin):
+    user = User.query.get(user_id)
+    user.is_admin = bool(is_admin)
+    db.session.commit()
+    if bool(is_admin):
+        flash(f"@{user.username} is now admin", "success")
+    else:
+        flash(f"@{user.username} is now user", "success")
+    return redirect(url_for("main.dashboard"))

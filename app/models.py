@@ -61,20 +61,12 @@ class User(db.Model):
 
     @property
     def recent_payment(self):
-        return Payment.query.join(User.payments).order_by(db.desc(Payment.date_paid)).first()
+        return Payment.query.join(User.payments).order_by(db.desc(Payment.date_paid)).filter(Payment.user_id == self.id).first()
 
     @property
     def current_payment(self):
         return Payment.query.order_by(db.asc(Payment.due_date)).filter(Payment.user_id == self.id).filter(
             Payment.is_expired == False).first()
-
-    @hybrid_property
-    def is_active(self):
-        return User.query.join(Payment, Payment.is_expired == False).first()
-
-    @is_active.expression
-    def is_active(self):
-        return Payment.is_expired == False
 
     @property
     def due_date(self):

@@ -13,7 +13,7 @@ from app.models import (
     SecretAnswer,
     User,
 )
-
+import click
 
 from ..utils import extract_date
 
@@ -134,7 +134,7 @@ def test():
     print(active_users)
 
     print("________")
-    user = User.query.get(1)
+    user = User.query.get(2)
 
     print(user.current_payment)
 
@@ -173,3 +173,17 @@ def test_markup():
     templates_dir = os.path.join(base_dir, "app", "templates")
     with open(f"{templates_dir}\\captcha.html", "r") as f:
         print(f.read())
+
+
+@admin_bp.cli.command("user-is_admin")
+@click.argument("username")
+@click.argument("is_admin")
+def user_is_admin(username, is_admin):
+    user = User.query.filter_by(username=username).first()
+    user.is_admin = bool(is_admin)
+    db.session.commit()
+    if bool(is_admin):
+        print(f"@{user.username} is now admin", "success")
+    else:
+        print(f"@{user.username} is now user", "success")
+    
