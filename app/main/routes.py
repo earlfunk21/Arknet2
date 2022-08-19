@@ -119,7 +119,7 @@ def all_plans():
         plans_lists.append(
             dict(id=plan.id, price=plan.price, speed=plan.speed, days=plan.days)
         )
-    return jsonify(*plans_lists)
+    return jsonify(plans_lists)
 
 
 @main_bp.route("/reports/", defaults={"page": 1})
