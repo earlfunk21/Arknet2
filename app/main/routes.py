@@ -64,7 +64,7 @@ def dashboard():
         ).limit(5).all()
 
     # Lists of Users
-    users = User.query.all()
+    users = db.session.query(User).filter(User.is_admin == False).all()
 
     # Lists of Reports
     reports = Report.query.order_by(Report.date_reported.desc()).limit(5).all()

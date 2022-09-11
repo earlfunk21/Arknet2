@@ -18,20 +18,18 @@ def payment_form():
         remarks = form.remarks.data
         plan = form.plan.data
         days = form.days.data
-        months = form.months.data * 30
-        years = form.years.data * 365
         user = form.user.data
+        total = form.total.data
         file = form.receipt.data
-        days_expired = days + months + years
-        due_date = datetime.datetime.now() + datetime.timedelta(days=days_expired)
+        due_date = datetime.datetime.now() + datetime.timedelta(days=days)
         if user.recent_payment:
-            due_date = user.recent_payment.due_date + datetime.timedelta(days=days_expired)
+            due_date = user.recent_payment.due_date + datetime.timedelta(days=days)
         payment = Payment(remarks=remarks,
                           due_date=due_date,
                           plan=plan,
                           user=user,
                           received_by=load_user(),
-                          amount=(days_expired / plan.days) * plan.price)
+                          amount=total)
         response = None
         if file:
             response = fik.upload(file)
