@@ -14,7 +14,7 @@ fik = FlaskImageKit()
 
 
 # Creating Application
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
 

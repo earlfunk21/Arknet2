@@ -36,7 +36,9 @@ class FlaskCaptcha(object):
         return base64_captcha
 
     def validate(self, answer):
-        return session[self.captcha_key] == answer or not self.captcha_enabled
+        if not self.captcha_enabled:
+            return True 
+        return session[self.captcha_key] == answer
 
     def captcha_html(self):
         if not self.captcha_enabled:
