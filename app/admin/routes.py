@@ -95,8 +95,8 @@ def init():
     )
 
     user = User(
-        username="admin",
-        password="admin123",
+        username=current_app.config.get("ADMIN_USERNAME"),
+        password=current_app.config.get("ADMIN_PASSWORD"),
         secret_answer=secret_answer,
         is_admin=True,
         user_details=user_details,

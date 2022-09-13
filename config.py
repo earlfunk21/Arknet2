@@ -29,11 +29,17 @@ class Config(object):
     FLASK_CAPTCHA_HEIGHT = 90
     FLASK_CAPTCHA_WIDTH = 280
 
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
+    ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
+
     # SQLALCHEMY
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'dev-data.db')
+
+    FLASK_CAPTCHA_ENABLED = False
 
 
 # create the production config

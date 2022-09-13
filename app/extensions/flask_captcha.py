@@ -3,7 +3,6 @@ import os
 import random
 from flask import session, Flask, jsonify, Markup, url_for, abort
 from captcha.image import ImageCaptcha
-from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 
 class FlaskCaptcha(object):
@@ -13,7 +12,7 @@ class FlaskCaptcha(object):
             self.init_app(app)
 
     def init_app(self, app: Flask):
-
+        self.captcha_enabled = app.config.get('FLASK_CAPTCHA_ENABLED', True)
         self.captcha_key = app.config.get("FLASK_CAPTCHA_KEY")
         self.length = app.config.get("FLASK_CAPTCHA_LENGTH")
         self.size = {}
@@ -37,9 +36,11 @@ class FlaskCaptcha(object):
         return base64_captcha
 
     def validate(self, answer):
-        return session[self.captcha_key] == answer
+        return session[self.captcha_key] == answer or not self.captcha_enabled
 
     def captcha_html(self):
+        if not self.captcha_enabled:
+            return ''
         return Markup(
             """
                 <div class="row">
