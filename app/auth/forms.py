@@ -1,14 +1,9 @@
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, PasswordField
-from wtforms_sqlalchemy.fields import QuerySelectField
+from wtforms import StringField, validators, PasswordField, SelectField
 
-from app.models import SecretQuestion, SecretAnswer, User
+from app.models import SecretQuestion, User
 from app.utils import captcha_validator
-
-
-def question_query():
-    return SecretQuestion.query
 
 
 class RegistrationForm(FlaskForm):
@@ -20,9 +15,15 @@ class RegistrationForm(FlaskForm):
                              render_kw={'data-bs-toggle':"tooltip", 'data-bs-placement': "right", 'title': "Password length must be between 8 and 120 characters"})
     confirm_password = PasswordField("Confirm Password", validators=[validators.InputRequired(),
                                                                              validators.EqualTo("password", message="Password must match")])
-    questions = QuerySelectField("Select a secret question", validators=[validators.InputRequired()], query_factory=question_query)
+    question = SelectField('Select Secret Question', choices=[('What is the name of your favorite pet?'),
+                                                    ('In what city were you born?'),
+                                                    ("What is your mother's maiden name?"),
+                                                    ('What high school did you attend?'),
+                                                    ('What was the name of your elementary school?'),
+                                                    ('What was the make of your first car?'),
+                                                    ('What was your favorite food as a child?')])
     
-    answer = StringField("Secret Answer", validators=[validators.InputRequired()])
+    answer = StringField("Answer", validators=[validators.InputRequired()])
     
     def validate_username(form, field):
         if User.query.filter_by(username=field.data).first():
@@ -38,7 +39,7 @@ class LoginForm(FlaskForm):
     def validate_username(form, field):
         if not User.query.filter_by(username=field.data).first():
             raise validators.ValidationError(f"{field.data} doesn't exist!")
-
+    
 
 class UpdatePasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[validators.InputRequired(),
@@ -53,10 +54,11 @@ class UpdatePasswordForm(FlaskForm):
         self.user = user
     
     def validate_answer(form, field):
-        secret_answer = SecretAnswer.query.filter_by(user=form.user).first()
-        if not secret_answer.answer == field.data:
+        secret_question = SecretQuestion.query.filter_by(user=form.user).first()
+        if not secret_question.answer == field.data:
             raise validators.ValidationError(f"Secret answer is incorrect")
     
+
 
 class ForgotPasswordForm(FlaskForm):
     
@@ -73,5 +75,4 @@ class UserDetailsForm(FlaskForm):
     last_name = StringField("Last Name", validators=[validators.InputRequired()])
     address = StringField("Address", validators=[validators.InputRequired()])
     phone = StringField("Phone Number", validators=[validators.InputRequired()])
-    social_media = StringField("Name", render_kw={"placeholder": "Example: Facebook"})
-    account_name = StringField("Account Name")
+    social_media = StringField("Facebook name")

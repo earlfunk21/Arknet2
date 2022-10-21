@@ -7,7 +7,6 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
     {% include 'includes/logo.html' %}
-    {% include 'includes/search_bar.html' %}
     {% include 'includes/navbar.html' %}
   </header><!-- End Header -->
 
@@ -158,16 +157,9 @@
                     <div class="col-lg-9 col-md-8">{{ user.user_details.phone }}</div>
                   </div>
 
-                  <h5 class="card-title">Social Media</h5>
-
                   <div class="row ps-3">
-                    <div class="col-lg-3 col-md-4 label">Company name</div>
-                    <div class="col-lg-9 col-md-8">{{ user.user_details.social_media.name }}</div>
-                  </div>
-
-                  <div class="row ps-3">
-                    <div class="col-lg-3 col-md-4 label">Account name</div>
-                    <div class="col-lg-9 col-md-8">{{ user.user_details.social_media.account_name }}</div>
+                    <div class="col-lg-3 col-md-4 label">Facebook name</div>
+                    <div class="col-lg-9 col-md-8">{{ user.user_details.social_media }}</div>
                   </div>
 
                 </div>
@@ -205,19 +197,11 @@
                     </div>
 
                     <div class="row mb-3">
-                      <label for="company" class="col-md-4 col-lg-3 col-form-label">Social Media</label>
+                      <label for="social_media" class="col-md-4 col-lg-3 col-form-label">Facebook name</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="company" type="text" class="form-control" id="company" value='{{ user.user_details.social_media.name }}'>
+                        <input name="social_media" type="text" class="form-control" id="social_media" value="{{ user.user_details.social_media }}">
                       </div>
-                      </div>
-                      <div class="row mb-3">
-                        <label for="account_name" class="col-md-4 col-lg-3 col-form-label">Account Name</label>
-                        <div class="col-md-8 col-lg-9">
-                          <input name="account_name" type="text" class="form-control" id="account_name" value='{{ user.user_details.social_media.account_name }}'>
-                        </div>
-                      </div>
-
-
+                    </div>
 
                     <div class="text-center">
                       <button type="submit" class="btn btn-primary">Save Changes</button>

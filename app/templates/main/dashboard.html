@@ -3,408 +3,390 @@
 
 {% block body %}
 
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
-    {% include 'includes/logo.html' %}
-    {% include 'includes/search_bar.html' %}
-    {% include 'includes/navbar.html' %}
-  </header><!-- End Header -->
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+  {% include 'includes/logo.html' %}
+  {% include 'includes/navbar.html' %}
+</header><!-- End Header -->
 
-   <!-- ======= Sidebar ======= -->
-   {% include 'includes/sidenav.html' %}
+<!-- ======= Sidebar ======= -->
+{% include 'includes/sidenav.html' %}
 
 <main id="main" class="main">
   {% include 'message.html' %}
-    <div class="pagetitle">
-      <h1>Dashboard</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
 
-    <section class="section dashboard">
-      <div class="row">
+  <section class="section dashboard">
+    <div class="row">
 
-        <!-- Left side columns -->
-        <div class="col-lg-8">
-          <div class="row">
+      <!-- Left side columns -->
+      <div class="col-lg-8">
+        <div class="row">
 
-            <!-- Sales Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card sales-card">
-                <div class="card-body">
-                  <h5 class="card-title">Total Subscribers</h5>
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card sales-card">
+              <div class="card-body">
+                <h5 class="card-title">Total Subscribers</h5>
 
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cash-coin"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ total_users }}</h6>
-                    </div>
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cash-coin"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ total_users }}</h6>
                   </div>
                 </div>
-
-              </div>
-            </div><!-- End Sales Card -->
-
-            <!-- Revenue Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card revenue-card">
-                <div class="card-body">
-                  <h5 class="card-title">Active Subscribers</h5>
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-people"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ active_users }}</h6>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div><!-- End Revenue Card -->
-
-            <!-- Customers Card -->
-            <div class="col-xxl-4 col-xl-12">
-
-              <div class="card info-card customers-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-                    <li><a class="dropdown-item" href="{{ url_for(request.endpoint) }}">This Month</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for(request.endpoint, filter='Year') }}">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Gross Sales <span>| This {{ request.args.get('filter', 'Month') }}</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cash-coin"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>{{ "{:,.2f}".format(total_gross_sales) }}</h6>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-            </div><!-- End Customers Card -->
-
-            <!-- Reports -->
-            <div class="col-12">
-              <div class="card">
-
-                <div class="card-body">
-                  <h5 class="card-title">Gross Sales</h5>
-
-                  <!-- Line Chart -->
-                  <div id="reportsChart"></div>
-
-                  <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                      new ApexCharts(document.querySelector("#reportsChart"), {
-                        series: [{
-                          name: 'Sales',
-                          data: [
-                            {% for gross_value in gross_sales %}
-                              "{{ '%.2f' % gross_value[1] | float }}",
-                            {% endfor %}
-                          ]
-                        }],
-                        chart: {
-                          height: 350,
-                          type: 'area',
-                          toolbar: {
-                            show: false
-                          },
-                        },
-                        markers: {
-                          size: 4
-                        },
-                        colors: ['#4154f1'],
-                        fill: {
-                          type: "gradient",
-                          gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.3,
-                            opacityTo: 0.4,
-                            stops: [0, 90, 100]
-                          }
-                        },
-                        dataLabels: {
-                          enabled: false
-                        },
-                        stroke: {
-                          curve: 'smooth',
-                          width: 2
-                        },
-                        xaxis: {
-                          type: 'datetime',
-                          categories: [
-                            {% for gross_value in gross_sales %}
-                              "{{ gross_value[0] }}",
-                            {% endfor %}
-                          ]
-                        },
-                        tooltip: {
-                          x: {
-                            format: 'MM/yy'
-                          },
-                        }
-                      }).render();
-                    });
-                  </script>
-                  <!-- End Line Chart -->
-
-                </div>
-
-              </div>
-            </div><!-- End Reports -->
-
-            <!-- Recent Sales -->
-            <div class="col-12">
-              <div class="card top-selling overflow-auto">
-
-                <div class="card-body">
-                  <h5 class="card-title">Recent Payments</h5>
-
-                  <table class="table table-borderless">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Plan</th>
-                        <th scope="col">Received By</th>
-                        <th scope="col">Date Paid</th>
-                        <th scope="col">Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for payment in payments %}
-                          <tr>
-                              <td>{{ payment.id }}</td>
-                              <td>{{ payment.user.username }}</td>
-                              <td>{{ payment.plan.price }}</td>
-                              <td>{{ payment.received_by }}</td>
-                              <td>{{ payment.date_paid.strftime("%d %B %Y, %I:%M %p") }}</td>
-                              <td>{{ payment.remarks }}</td>
-                          </tr> 
-                      {% endfor %}
-                    </tbody>
-                  </table>
-
-                </div>
-
-              </div>
-            </div><!-- End Recent Sales -->
-
-            <!-- Top Selling -->
-            <div class="col-12">
-              <div class="card top-selling overflow-auto">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body pb-0">
-                  <h5 class="card-title">Subscribers</h5>
-
-                  <table class="table table-borderless datatable">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Plan</th>
-                        <th scope="col">Due Date</th>
-                        <th scope="col">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for user in users %}
-                        <tr>
-                            <td class="txt-oflo">{{ user.id }}</td>
-                            <td class="txt-oflo"><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(user.username, salt='username')) }}">{{ user }}</a></td>
-                            <td>{{ user.current_payment }}</td>
-                            <td class="txt-oflo">{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else "Inactive" }}</td>
-                            {% if user.current_payment %}
-                                <td class="text-success">Active</td>
-                            {% else %}
-                                <td class="text-danger">Inactive</td>
-                            {% endif %}
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-
-                </div>
-
-              </div>
-            </div><!-- End Top Selling -->
-
-          </div>
-        </div><!-- End Left side columns -->
-
-        <!-- Right side columns -->
-        <div class="col-lg-4">
-
-          <!-- <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Recent Reports</h5>
-
-              <div class="activity">
-                {% for report in reports %}
-                  <div class="activity-item d-flex">
-                    <div class="activite-label">{{ time_ago(report.date_reported) }}</div>
-                    <i class='bi bi-caret-right activity-badge text-red align-self-start'></i>
-                    <div class="activity-content">
-                      {{ report.subject[:8] }}
-                    </div>
-                  </div>
-                {% endfor %}
               </div>
 
             </div>
-          </div> -->
+          </div><!-- End Sales Card -->
 
-          <div class="col-lg">
-            <div class="card">
+          <!-- Revenue Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
               <div class="card-body">
-                <h5 class="card-title">Registered Every month</h5>
-  
-                <!-- Bar Chart -->
-                <div id="barChart"></div>
-  
+                <h5 class="card-title">Active Subscribers</h5>
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ active_users }}</h6>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div><!-- End Revenue Card -->
+
+          <!-- Customers Card -->
+          <div class="col-xxl-4 col-xl-12">
+
+            <div class="card info-card customers-card">
+
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                  </li>
+                  <li><a class="dropdown-item" href="{{ url_for(request.endpoint) }}">This Month</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for(request.endpoint, filter='Year') }}">This Year</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title">Gross Sales <span>| This {{ request.args.get('filter', 'Month') }}</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cash-coin"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ "{:,.2f}".format(total_gross_sales) }}</h6>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- End Customers Card -->
+
+          <!-- Reports -->
+          <div class="col-12">
+            <div class="card">
+
+              <div class="card-body">
+                <h5 class="card-title">Gross Sales</h5>
+
+                <!-- Line Chart -->
+                <div id="reportsChart"></div>
+
                 <script>
                   document.addEventListener("DOMContentLoaded", () => {
-                    new ApexCharts(document.querySelector("#barChart"), {
+                    new ApexCharts(document.querySelector("#reportsChart"), {
                       series: [{
+                        name: 'Sales',
                         data: [
-                          {% for data in user_created_on %}
+                          {% for gross_value in gross_sales %}
+                              "{{ '%.2f' % gross_value[1] | float }}",
+                      {% endfor %}
+                          ]
+                        }],
+                    chart: {
+                    height: 350,
+                    type: 'area',
+                    toolbar: {
+                      show: false
+                    },
+                  },
+                    markers: {
+                    size: 4
+                  },
+                    colors: ['#4154f1'],
+                    fill: {
+                    type: "gradient",
+                    gradient: {
+                      shadeIntensity: 1,
+                      opacityFrom: 0.3,
+                      opacityTo: 0.4,
+                      stops: [0, 90, 100]
+                    }
+                  },
+                    dataLabels: {
+                    enabled: false
+                  },
+                    stroke: {
+                    curve: 'smooth',
+                    width: 2
+                  },
+                    xaxis: {
+                    type: 'datetime',
+                    categories: [
+                      {% for gross_value in gross_sales %}
+                              "{{ gross_value[0] }}",
+                    {% endfor %}
+                          ]
+                        },
+                    tooltip: {
+                    x: {
+                      format: 'MM/yy'
+                    },
+                  }
+                      }).render();
+                    });
+                </script>
+                <!-- End Line Chart -->
+
+              </div>
+
+            </div>
+          </div><!-- End Reports -->
+
+          <!-- Recent Sales -->
+          <div class="col-12">
+            <div class="card top-selling overflow-auto">
+
+              <div class="card-body">
+                <h5 class="card-title">Recent Payments</h5>
+
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Customer</th>
+                      <th scope="col">Plan</th>
+                      <th scope="col">Received By</th>
+                      <th scope="col">Date Paid</th>
+                      <th scope="col">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                      <td>{{ payment.id }}</td>
+                      <td>{{ payment.user.username }}</td>
+                      <td>{{ payment.plan.price }}</td>
+                      <td>{{ payment.received_by }}</td>
+                      <td>{{ payment.date_paid.strftime("%d %B %Y, %I:%M %p") }}</td>
+                      <td>{{ payment.remarks }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
+
+            </div>
+          </div><!-- End Recent Sales -->
+
+          <!-- Top Selling -->
+          <div class="col-12">
+            <div class="card top-selling overflow-auto">
+
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" href="#">Today</a></li>
+                  <li><a class="dropdown-item" href="#">This Month</a></li>
+                  <li><a class="dropdown-item" href="#">This Year</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body pb-0">
+                <h5 class="card-title">Subscribers</h5>
+
+                <table class="table table-borderless datatable">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Plan</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in users %}
+                    <tr>
+                      <td class="txt-oflo">{{ user.id }}</td>
+                      <td class="txt-oflo"><a class="fw-bold text-dark"
+                          href="{{ url_for('main.profile', token=dumps_token(user.username, salt='username')) }}">{{
+                          user }}</a></td>
+                      <td>{{ user.current_payment }}</td>
+                      <td class="txt-oflo">{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else
+                        "Inactive" }}</td>
+                      {% if user.current_payment %}
+                      <td class="text-success">Active</td>
+                      {% else %}
+                      <td class="text-danger">Inactive</td>
+                      {% endif %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+              </div>
+
+            </div>
+          </div><!-- End Top Selling -->
+
+        </div>
+      </div><!-- End Left side columns -->
+
+      <!-- Right side columns -->
+      <div class="col-lg-4">
+        <div class="col-lg">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Registered Every month</h5>
+
+              <!-- Bar Chart -->
+              <div id="barChart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  new ApexCharts(document.querySelector("#barChart"), {
+                    series: [{
+                      data: [
+                        {% for data in user_created_on %}
                             "{{ data[1] }}",
-                          {% endfor %}
+                    {% endfor %}
                         ]
                       }],
-                      chart: {
-                        type: 'bar',
-                        height: 350
-                      },
-                      plotOptions: {
-                        bar: {
-                          borderRadius: 4,
-                          horizontal: true,
-                        }
-                      },
-                      dataLabels: {
-                        enabled: false
-                      },
-                      xaxis: {
-                        categories: [
-                        {% for data in user_created_on %}
+                  chart: {
+                  type: 'bar',
+                  height: 350
+                },
+                  plotOptions: {
+                  bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                  }
+                },
+                  dataLabels: {
+                  enabled: false
+                },
+                  xaxis: {
+                  categories: [
+                    {% for data in user_created_on %}
                           "{{ data[0].strftime('%B') }}",
-                        {% endfor %}
+                  {% endfor %}
                         ],
                       }
                     }).render();
                   });
-                </script>
-                <!-- End Bar Chart -->
-              </div>
+              </script>
+              <!-- End Bar Chart -->
             </div>
           </div>
+        </div>
 
 
-          <!-- Website Traffic -->
-          <div class="card">
-            <div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
+        <!-- Website Traffic -->
+        <div class="card">
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filter</h6>
+              </li>
 
-                <li><a class="dropdown-item" href="#">Today</a></li>
-                <li><a class="dropdown-item" href="#">This Month</a></li>
-                <li><a class="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div>
+              <li><a class="dropdown-item" href="#">Today</a></li>
+              <li><a class="dropdown-item" href="#">This Month</a></li>
+              <li><a class="dropdown-item" href="#">This Year</a></li>
+            </ul>
+          </div>
 
-            <div class="card-body pb-0">
-              <h5 class="card-title">Mostly Plan Used</h5>
+          <div class="card-body pb-0">
+            <h5 class="card-title">Mostly Plan Used</h5>
 
-              <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+            <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  echarts.init(document.querySelector("#trafficChart")).setOption({
-                    tooltip: {
-                      trigger: 'item'
+            <script>
+              document.addEventListener("DOMContentLoaded", () => {
+                echarts.init(document.querySelector("#trafficChart")).setOption({
+                  tooltip: {
+                    trigger: 'item'
+                  },
+                  legend: {
+                    top: '5%',
+                    left: 'center'
+                  },
+                  series: [{
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                      show: false,
+                      position: 'center'
                     },
-                    legend: {
-                      top: '5%',
-                      left: 'center'
-                    },
-                    series: [{
-                      name: 'Access From',
-                      type: 'pie',
-                      radius: ['40%', '70%'],
-                      avoidLabelOverlap: false,
+                    emphasis: {
                       label: {
-                        show: false,
-                        position: 'center'
-                      },
-                      emphasis: {
-                        label: {
-                          show: true,
-                          fontSize: '18',
-                          fontWeight: 'bold'
-                        }
-                      },
-                      labelLine: {
-                        show: false
-                      },
-                      data: [
+                        show: true,
+                        fontSize: '18',
+                        fontWeight: 'bold'
+                      }
+                    },
+                    labelLine: {
+                      show: false
+                    },
+                    data: [
                       {% for plan in plan_data %}
                         {
-                          value: "{{ plan[1] }}",
-                          name: '{{ plan[0] }}'
-                        },
-                      {% endfor %}
+                    value: "{{ plan[1] }}",
+                    name: '{{ plan[0] }}'
+                  },
+                  {% endfor %}
                       ]
                     }]
                   });
                 });
-              </script>
+            </script>
 
-            </div>
-          </div><!-- End Website Traffic -->
+          </div>
+        </div><!-- End Website Traffic -->
 
-        </div><!-- End Right side columns -->
+      </div><!-- End Right side columns -->
 
-      </div>
-    </section>
+    </div>
+  </section>
 
-  </main><!-- End #main -->
+</main><!-- End #main -->
 
 {% endblock %}

@@ -2,10 +2,8 @@ import datetime
 from flask import abort, render_template, request, redirect, url_for, flash, jsonify
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
-from app.main.form import ReportForm
-from app.models import Payment, Plan, Report, User
+from app.models import Payment, Plan, User
 from app.main import main_bp
-from sqlalchemy import and_
 
 from app.utils import extract_date, loads_token
 from app.models import db
@@ -24,11 +22,11 @@ def dashboard():
     )
 
     # Total Users
-    total_users = len(User.query.all())
+    total_users = len(User.query.filter(User.is_admin==False).all())
 
     # Total active users
     active_users = len(
-        User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).all()
+        User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).filter(User.is_admin==False).all()
     )
 
     # Total Gross Sales
@@ -66,9 +64,6 @@ def dashboard():
     # Lists of Users
     users = db.session.query(User).filter(User.is_admin == False).all()
 
-    # Lists of Reports
-    reports = Report.query.order_by(Report.date_reported.desc()).limit(5).all()
-
     # Context
     context = dict(
         user_created_on=user_create_on,
@@ -79,7 +74,6 @@ def dashboard():
         plan_data=plan_data,
         payments=payments,
         users=users,
-        reports=reports,
     )
 
     return render_template("main/dashboard.html", **context)
@@ -99,12 +93,10 @@ def profile(token):
     if request.method == "POST":
         about = request.form["about"]
         phone = request.form["phone"]
-        company = request.form["company"]
-        account_name = request.form["account_name"]
+        social_media = request.form["social_media"]
         user.user_details.about = about
         user.user_details.phone = phone
-        user.user_details.social_media.name = company
-        user.user_details.social_media.account_name = account_name
+        user.user_details.social_media = social_media
         db.session.commit()
         flash("Successfully Edited", "success")
         return redirect(request.url)
@@ -123,32 +115,6 @@ def all_plans():
 
 
 @main_bp.route("/reports/", defaults={"page": 1})
-@main_bp.route("/reports/<int:page>/")
-@require_login
-@admin_required
-def report_lists(page):
-    reports = Report.query.order_by(Report.date_reported.desc()).paginate(
-        page=page, error_out=False, per_page=10
-    )
-    context = dict(reports=reports)
-    return render_template("main/reports.html", **context)
-
-
-@main_bp.route("/send_report/", methods=["POST", "GET"])
-@require_login
-def send_report():
-    form = ReportForm()
-    if form.validate_on_submit():
-        subject = form.subject.data
-        message = form.message.data
-        report = Report(subject=subject, message=message, user=load_user())
-        db.session.add(report)
-        db.session.commit()
-        flash("Successfully Reported!", "success")
-        return redirect(url_for("main.profile"))
-    return render_template("main/report_form.html", form=form)
-
-
 @main_bp.route("/user_is_admin/<int:user_id>/<int:is_admin>/")
 @require_login
 @admin_required

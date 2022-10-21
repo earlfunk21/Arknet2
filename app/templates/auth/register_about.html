@@ -33,35 +33,7 @@
                     {{ render_field(form.last_name) }}
                     {{ render_field(form.address) }}
                     {{ render_field(form.phone) }}
-
-                    <div class="col-12">
-                      <div class="form-check">
-                        <input class="form-check-input" name="sm-checkbox" type="checkbox" value="" id="sm-checkbox">
-                        <label class="form-check-label" for="social-media">Social Media</label>
-                        <div class="mt-2" id="social-media">
-                          <div class="row">
-                            {{ render_field(form.social_media, col='col-12 mb-3') }}
-                            {{ render_field(form.account_name, col='col-12 mb-3') }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <script>
-                      $('#social-media').hide();
-                      $('#sm-checkbox').change(function() {
-                          if ($('#sm-checkbox').prop('checked')) {
-                              $('#social-media').show();
-                              $('#company').attr('required', 'required');
-                              $('#account_name').attr('required', 'required');
-                          } else {
-                              $('#social-media').hide();
-                              $('#company').removeAttr('required', 'required');
-                              $('#account_name').removeAttr('required', 'required');
-                          }
-                      });
-                    </script>
-
+                    {{ render_field(form.social_media) }}
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Create Account</button>
                     </div>

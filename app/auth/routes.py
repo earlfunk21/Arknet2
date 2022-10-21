@@ -4,7 +4,7 @@ from itsdangerous import BadSignature, SignatureExpired
 from app.auth import auth_bp
 from app.auth.forms import UserDetailsForm, ForgotPasswordForm, LoginForm, RegistrationForm, UpdatePasswordForm
 from app.auth.utils import *
-from app.models import SecretQuestion, SocialMedia, db, UserDetails, SecretAnswer, User
+from app.models import SecretQuestion, db, UserDetails, User
 from app.utils import dumps_token, loads_token
 
 
@@ -39,9 +39,9 @@ def register():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        question = form.questions.data
+        question = form.question.data
         answer = form.answer.data
-        user = {'username': username, 'password': password, 'question': question.id, 'answer': answer}
+        user = {'username': username, 'password': password, 'question': question, 'answer': answer}
         token = dumps_token(user, salt="register")
         return redirect(url_for("auth.register_about", token=token))
     return render_template("auth/register.html", form=form)
@@ -62,23 +62,18 @@ def register_about(token):
         last_name = form.last_name.data.capitalize()
         address = form.address.data.title()
         phone = form.phone.data
-        company = request.form.get('company')
-        account_name = request.form.get('account_name')
-        social_media = SocialMedia(name=company, account_name=account_name)
+        social_media = form.social_media.data
         user_details = UserDetails(first_name=first_name,
                                 middle_name=middle_name,
                                 last_name=last_name,
                                 address=address,
                                 phone=phone,
                                 social_media=social_media)
-        secret_question = SecretQuestion.query.get(token['question'])
-        secret_answer = SecretAnswer(answer=token['answer'], secret_question=secret_question)
+        secret_question = SecretQuestion(answer=token['answer'], question=token['question'])
         user = User(username=token['username'],
                     password=token['password'],
-                    secret_answer=secret_answer,
+                    secret_question=secret_question,
                     user_details=user_details)
-        db.session.add(secret_answer)
-        db.session.add(user_details)
         db.session.add(user)
         db.session.commit()
         flash("Successfully Created!", 'success')
@@ -114,4 +109,4 @@ def update_password(token):
         db.session.commit()
         flash("Password updated successfully", "success")
         return redirect(url_for('auth.logout'))
-    return render_template("auth/update_password.html", form=form, question=user.secret_answer.secret_question)
+    return render_template("auth/update_password.html", form=form, question=user.secret_question.question)

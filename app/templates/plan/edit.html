@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Plan Edit Form{% endblock %}
+
+{% from 'input.html' import render_field %}
+
+{% block body %}
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+  {% include 'includes/logo.html' %}
+  {% include 'includes/navbar.html' %}
+</header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+{% include 'includes/sidenav.html' %}
+
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Plan</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+        <li class="breadcrumb-item">Plan</li>
+        <li class="breadcrumb-item active">Form</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <div class="container">
+
+    <section class="section register d-flex flex-column justify-content-center py-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+            <div class="d-flex justify-content-center py-4">
+              <a href="#" class="logo d-flex align-items-center w-auto">
+                <span class="d-none d-lg-block">Arknet</span>
+              </a>
+            </div><!-- End Logo -->
+
+            <div class="card mb-3">
+
+              <div class="card-body">
+
+                <div class="pt-4 pb-2">
+                  <h5 class="card-title text-center pb-0 fs-4">Create Plan</h5>
+                </div>
+
+                <form method="post" class="row g-3 needs-validation" novalidate>
+                  {{ form.csrf_token }}
+                  <input type="hidden" name="plan_id" value="{{ plan_id }}">
+                  {{ render_field(form.price, prefix='₱') }}
+                  {{ render_field(form.speed) }}
+                  {{ render_field(form.admin_key)}}
+
+                  <div class="col-12">
+                    <button class="btn btn-primary w-100" type="submit">Submit</button>
+                  </div>
+
+                  <div class="col-12">
+                    <a href="{{ url_for('admin.plan.delete_plan', token=dumps_token(plan_id, salt='delete_plan')) }}">
+                      <i class="bi bi-trash3 text-danger btn border-0 d-flex justify-content-end"></i>
+                    </a>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+</main><!-- End #main -->
+{% endblock %}

@@ -9,7 +9,7 @@ from flask import current_app
 class PaymentForm(FlaskForm):
     remarks = TextAreaField("Remarks")
     plan = QuerySelectField("Plans", query_factory=lambda: Plan.query, allow_blank=True, validators=[validators.DataRequired()])
-    user = QuerySelectField("Users", query_factory=lambda: User.query, get_label='username', allow_blank=True, validators=[validators.DataRequired()])
+    user = QuerySelectField("Users", query_factory=lambda: User.query.filter(User.is_admin==False), get_label='username', allow_blank=True, validators=[validators.DataRequired()])
     days = IntegerField("Days", default=0)
     total = IntegerField("Total Payment", default=0)
     receipt = FileField('Proof of Payment', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])

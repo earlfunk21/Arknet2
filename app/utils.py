@@ -10,11 +10,14 @@ from wtforms import ValidationError
 
 s = URLSafeTimedSerializer("arkhnet")
 
+
 def loads_token(token, max_age=None, salt=None):
     return s.loads(token, max_age, salt=salt)
 
+
 def dumps_token(token, salt=None):
     return s.dumps(token, salt)
+
 
 def extract_date(obj_date, filter_date=None):
     sales_extract = [extract('month', obj_date) == datetime.datetime.now().month,

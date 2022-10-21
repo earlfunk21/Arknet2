@@ -46,16 +46,7 @@
               </a>
             </li>
           </ul>
-        </li><!-- End Plan Nav -->
-
-        <!-- <li class="nav-item">
-          <a class="nav-link collapsed" href="{{ url_for('main.report_lists') }}">
-            <i class="bi bi-exclamation-lg"></i>
-            <span>Reports</span>
-          </a>
-        </li>End Reports Page Nav -->
-
-        <!-- End of admin page -->
+        </li>
       {% endif %}
 
       <li class="nav-heading">User</li>
@@ -71,14 +62,7 @@
           <i class="bi bi-clock-history"></i>
           <span>Payments History</span>
         </a>
-      </li><!-- End Profile Page Nav -->
-
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="{{ url_for('main.send_report') }}">
-          <i class="bi bi-send-exclamation"></i>
-          <span>Send Report</span>
-        </a>
-      </li>End Profile Page Nav -->
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{{ url_for('auth.update_password', token=dumps_token(load_user().username, salt='forgot_password')) }}">

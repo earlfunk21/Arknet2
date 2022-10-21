@@ -1,19 +1,17 @@
 from flask import Flask
-from .extensions.flask_captcha import FlaskCaptcha
-from app.extensions.imagekit import FlaskImageKit
 from config import DevelopmentConfig, ProductionConfig
 from flask_session import Session
 
 # Extensions
 from app.models import db
-from flask_migrate import Migrate
+from app.extensions.imagekit import FlaskImageKit
+from .extensions.flask_captcha import FlaskCaptcha
 
-migrate = Migrate()
+
 captcha = FlaskCaptcha()
 fik = FlaskImageKit()
 
 
-# Creating Application
 def create_app(config=ProductionConfig):
     app = Flask(__name__)
     app.config.from_object(config)
@@ -24,6 +22,7 @@ def create_app(config=ProductionConfig):
     # Blueprints
     blueprints(app)
 
+    # Context Processor
     context_processor(app)
 
     return app
@@ -39,6 +38,7 @@ def blueprints(app: Flask):
     from app.admin import admin_bp
     app.register_blueprint(admin_bp)
 
+    # Main
     from app.main import main_bp
     app.register_blueprint(main_bp)
 
@@ -48,18 +48,14 @@ def extensions(app: Flask):
     db.init_app(app)
     db.app = app
 
-    migrate.init_app(app, db)
-    migrate.app = app
-
     Session(app)
     captcha.init_app(app)
 
     fik.init_app(app)
 
-
+# Context Processor
 def context_processor(app: Flask):
     from app.auth.utils import load_user
-
     app.jinja_env.globals['load_user'] = load_user
 
     from app.utils import time_ago

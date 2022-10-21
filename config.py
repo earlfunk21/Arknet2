@@ -13,7 +13,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # SECRET
-    SECRET_QUESTION_ID = os.environ.get("SECRET_QUESTION_ID")
+    SECRET_QUESTION = os.environ.get("SECRET_QUESTION")
     SECRET_ANSWER = os.environ.get("SECRET_ANSWER")
 
     ADMIN_KEY = os.environ.get("ADMIN_KEY")

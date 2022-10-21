@@ -9,18 +9,11 @@ db = SQLAlchemy()
 
 class SecretQuestion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(255), nullable=False, unique=True)
+    question = db.Column(db.String(255), nullable=False)
+    answer = db.Column(db.String(255), nullable=False)
 
     def __str__(self):
         return self.question
-
-
-class SecretAnswer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.String(255), nullable=False)
-    secret_question_id = db.Column(db.Integer, db.ForeignKey(
-        "secret_question.id"), nullable=False)
-    secret_question = db.relationship("SecretQuestion")
 
 
 class User(db.Model):
@@ -35,9 +28,9 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
 
     # relationships
-    secret_answer_id = db.Column(db.Integer, db.ForeignKey(
-        "secret_answer.id", ondelete="CASCADE"), nullable=False)
-    secret_answer = db.relationship("SecretAnswer", backref=db.backref("user", uselist=False, cascade="all, delete",
+    secret_question_id = db.Column(db.Integer, db.ForeignKey(
+        "secret_question.id", ondelete="CASCADE"), nullable=False)
+    secret_question = db.relationship("SecretQuestion", backref=db.backref("user", uselist=False, cascade="all, delete",
                                                                        passive_deletes=True))
 
     user_details_id = db.Column(db.Integer, db.ForeignKey(
@@ -80,34 +73,18 @@ class UserDetails(db.Model):
     last_name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(11))
+    social_media = db.Column(db.String(255))
     about = db.Column(db.String(255))
-
-    # relationships
-    social_media_id = db.Column(db.Integer, db.ForeignKey(
-        "social_media.id", ondelete="CASCADE"), nullable=False)
-    social_media = db.relationship("SocialMedia",
-                                   backref=db.backref("user_details", uselist=False, cascade="all, delete",
-                                                      passive_deletes=True))
 
     def __str__(self) -> str:
         middle_name = f"{self.middle_name} " if self.middle_name else ""
         return f"{self.first_name} {middle_name}{self.last_name}".title()
 
 
-class SocialMedia(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    account_name = db.Column(db.String(255))
-
-    def __str__(self) -> str:
-        return self.name
-
-
 class Plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Integer, nullable=False)
     speed = db.Column(db.Integer, nullable=False)
-    days = db.Column(db.Integer, nullable=False)
 
     def __str__(self):
         return f"{self.price} - {self.speed} mbps"
@@ -147,20 +124,3 @@ class Payment(db.Model):
     @hybrid_property
     def is_expired(self):
         return self.due_date < datetime.datetime.now()
-
-
-class Report(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    subject = db.Column(db.String(80), nullable=False)
-    message = db.Column(db.String(80), nullable=False)
-    date_reported = db.Column(db.DateTime(
-        timezone=True), default=datetime.datetime.now())
-
-    # relationships
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        "user.id", ondelete="CASCADE"), nullable=False)
-    user = db.relationship("User", backref=db.backref(
-        "reports", cascade="all, delete", passive_deletes=True))
-
-    def __str__(self) -> str:
-        return self.subject[:5]
