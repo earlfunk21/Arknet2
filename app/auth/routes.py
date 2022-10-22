@@ -2,7 +2,7 @@
 from flask import abort, flash, redirect, render_template, url_for, request
 from itsdangerous import BadSignature, SignatureExpired
 from app.auth import auth_bp
-from app.auth.forms import UserDetailsForm, ForgotPasswordForm, LoginForm, RegistrationForm, UpdatePasswordForm
+from app.auth.forms import UpdateSecretQuestion, UserDetailsForm, ForgotPasswordForm, LoginForm, RegistrationForm, UpdatePasswordForm
 from app.auth.utils import *
 from app.models import SecretQuestion, db, UserDetails, User
 from app.utils import dumps_token, loads_token
@@ -39,9 +39,7 @@ def register():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        question = form.question.data
-        answer = form.answer.data
-        user = {'username': username, 'password': password, 'question': question, 'answer': answer}
+        user = {'username': username, 'password': password}
         token = dumps_token(user, salt="register")
         return redirect(url_for("auth.register_about", token=token))
     return render_template("auth/register.html", form=form)
@@ -69,10 +67,8 @@ def register_about(token):
                                 address=address,
                                 phone=phone,
                                 social_media=social_media)
-        secret_question = SecretQuestion(answer=token['answer'], question=token['question'])
         user = User(username=token['username'],
                     password=token['password'],
-                    secret_question=secret_question,
                     user_details=user_details)
         db.session.add(user)
         db.session.commit()
@@ -101,6 +97,9 @@ def update_password(token):
         user = User.query.filter_by(username=username).first()
     if not user:
         return redirect(url_for("auth.forgot_password"))
+    if user.secret_question is None:
+        flash("Secret question is not yet setup.", "warning")
+        return redirect(url_for('auth.update_secret_question'))
     form = UpdatePasswordForm(user)
     if form.validate_on_submit():
         password = form.password.data
@@ -110,3 +109,25 @@ def update_password(token):
         flash("Password updated successfully", "success")
         return redirect(url_for('auth.logout'))
     return render_template("auth/update_password.html", form=form, question=user.secret_question.question)
+
+
+
+@auth_bp.route("/secret_question/", methods=["GET", "POST"])
+@require_login
+def update_secret_question():
+    user = load_user()
+    form = UpdateSecretQuestion()
+    if user.secret_question:
+        form.question.data = user.secret_question.question
+    if form.validate_on_submit():
+        question = request.form.get('question')
+        answer = request.form.get('answer')
+        if user.secret_question:
+            user.secret_question.question = question
+            user.secret_question.answer = answer
+        else:
+            secret_question = SecretQuestion(question = question, answer = answer)
+            user.secret_question = secret_question
+        db.session.commit()
+        return redirect(url_for('main.profile'))
+    return render_template("auth/update_sq.html", form=form)

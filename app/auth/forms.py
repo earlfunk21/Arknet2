@@ -15,15 +15,6 @@ class RegistrationForm(FlaskForm):
                              render_kw={'data-bs-toggle':"tooltip", 'data-bs-placement': "right", 'title': "Password length must be between 8 and 120 characters"})
     confirm_password = PasswordField("Confirm Password", validators=[validators.InputRequired(),
                                                                              validators.EqualTo("password", message="Password must match")])
-    question = SelectField('Select Secret Question', choices=[('What is the name of your favorite pet?'),
-                                                    ('In what city were you born?'),
-                                                    ("What is your mother's maiden name?"),
-                                                    ('What high school did you attend?'),
-                                                    ('What was the name of your elementary school?'),
-                                                    ('What was the make of your first car?'),
-                                                    ('What was your favorite food as a child?')])
-    
-    answer = StringField("Answer", validators=[validators.InputRequired()])
     
     def validate_username(form, field):
         if User.query.filter_by(username=field.data).first():
@@ -76,3 +67,16 @@ class UserDetailsForm(FlaskForm):
     address = StringField("Address", validators=[validators.InputRequired()])
     phone = StringField("Phone Number", validators=[validators.InputRequired()])
     social_media = StringField("Facebook name")
+
+
+class UpdateSecretQuestion(FlaskForm):
+    question = SelectField('Select Secret Question', choices=[('What is the name of your favorite pet?'),
+                                                    ('In what city were you born?'),
+                                                    ("What is your mother's maiden name?"),
+                                                    ('What high school did you attend?'),
+                                                    ('What was the name of your elementary school?'),
+                                                    ('What was the make of your first car?'),
+                                                    ('What was your favorite food as a child?')])
+    
+    answer = StringField("Answer", validators=[validators.InputRequired()])
+    

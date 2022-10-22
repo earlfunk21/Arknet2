@@ -25,22 +25,16 @@ def init():
     db.create_all()
 
     user_details = UserDetails(
-        first_name="admin",
+        first_name="",
         middle_name="",
-        last_name="admin",
+        last_name="",
         address="",
         phone="",
         social_media="",
     )
-    secret_question = SecretQuestion(
-        answer=current_app.config.get("SECRET_ANSWER"),
-        question=current_app.config.get("SECRET_QUESTION")
-    )
-
     user = User(
         username=current_app.config.get("ADMIN_USERNAME"),
         password=current_app.config.get("ADMIN_PASSWORD"),
-        secret_question=secret_question,
         is_admin=True,
         user_details=user_details,
     )

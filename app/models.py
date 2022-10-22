@@ -29,12 +29,12 @@ class User(db.Model):
 
     # relationships
     secret_question_id = db.Column(db.Integer, db.ForeignKey(
-        "secret_question.id", ondelete="CASCADE"), nullable=False)
+        "secret_question.id", ondelete="CASCADE"))
     secret_question = db.relationship("SecretQuestion", backref=db.backref("user", uselist=False, cascade="all, delete",
                                                                        passive_deletes=True))
 
     user_details_id = db.Column(db.Integer, db.ForeignKey(
-        "user_details.id", ondelete="CASCADE"), nullable=False)
+        "user_details.id", ondelete="CASCADE"))
     user_details = db.relationship("UserDetails", backref=db.backref("user", uselist=False, cascade="all, delete",
                                                                      passive_deletes=True))
 

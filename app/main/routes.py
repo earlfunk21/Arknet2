@@ -2,7 +2,7 @@ import datetime
 from flask import abort, render_template, request, redirect, url_for, flash, jsonify
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
-from app.models import Payment, Plan, User
+from app.models import Payment, Plan, User, UserDetails
 from app.main import main_bp
 
 from app.utils import extract_date, loads_token
@@ -91,12 +91,27 @@ def profile(token):
         except BadSignature:
             return abort(401)
     if request.method == "POST":
+        first_name = request.form["first_name"]
+        middle_name = request.form["middle_name"]
+        last_name = request.form["last_name"]
         about = request.form["about"]
         phone = request.form["phone"]
         social_media = request.form["social_media"]
-        user.user_details.about = about
-        user.user_details.phone = phone
-        user.user_details.social_media = social_media
+        if user.user_details:
+            user.user_details.first_name = first_name
+            user.user_details.middle_name = middle_name
+            user.user_details.last_name = last_name
+            user.user_details.about = about
+            user.user_details.phone = phone
+            user.user_details.social_media = social_media
+        else:
+            user_details = UserDetails(first_name=first_name,
+                                        middle_name=middle_name,
+                                        last_name=last_name,
+                                        about=about,
+                                        phone=phone,
+                                        social_media=social_media)
+            user.user_details = user_details
         db.session.commit()
         flash("Successfully Edited", "success")
         return redirect(request.url)

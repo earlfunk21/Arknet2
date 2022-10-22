@@ -12,10 +12,6 @@ class Config(object):
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # SECRET
-    SECRET_QUESTION = os.environ.get("SECRET_QUESTION")
-    SECRET_ANSWER = os.environ.get("SECRET_ANSWER")
-
     ADMIN_KEY = os.environ.get("ADMIN_KEY")
 
     SESSION_TYPE = 'sqlalchemy'
