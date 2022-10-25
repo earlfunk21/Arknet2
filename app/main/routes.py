@@ -2,7 +2,7 @@ import datetime
 from flask import abort, render_template, request, redirect, url_for, flash, jsonify
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
-from app.models import Payment, Plan, User, UserDetails
+from app.models import Expenses, Payment, Plan, User, UserDetails
 from app.main import main_bp
 
 from app.utils import extract_date, loads_token
@@ -24,27 +24,21 @@ def dashboard():
     # Total Users
     total_users = len(User.query.filter(User.is_admin==False).all())
 
+    # Total Expenses
+    total_expenses = db.session.query(db.func.sum(Expenses.cost)).first()[0] or 0
+
     # Total active users
     active_users = len(
         User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).filter(User.is_admin==False).all()
     )
 
     # Total Gross Sales
-    total_gross_sales = (
-        db.session.query(db.func.sum(Payment.amount))
-        .filter(
-            *extract_date(
-                Payment.date_paid, filter_date=request.args.get(
-                    "filter", "Month")
-            )
-        )
-        .first()[0]
-    )
+    total_gross_sales = db.session.query(db.func.sum(Payment.amount)).first()[0] or 0
 
     # Gross sales by months for graph
     gross_sales = (
         db.session.query(Payment.date_paid, db.func.sum(Payment.amount))
-        .group_by(*extract_date(Payment.date_paid, "Month"))
+        .group_by(db.func.strftime('%Y-%m', Payment.date_paid))
         .all()
     )
 
@@ -68,6 +62,8 @@ def dashboard():
     context = dict(
         user_created_on=user_create_on,
         total_users=total_users,
+        net_sales=total_gross_sales - total_expenses,
+        total_expenses=total_expenses,
         active_users=active_users,
         total_gross_sales=total_gross_sales or 0,
         gross_sales=gross_sales,
