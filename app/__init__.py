@@ -6,13 +6,14 @@ from flask_session import Session
 from app.models import db
 from app.extensions.imagekit import FlaskImageKit
 from .extensions.flask_captcha import FlaskCaptcha
+from flask_migrate import Migrate
 
 
 captcha = FlaskCaptcha()
 fik = FlaskImageKit()
 
 
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -52,6 +53,9 @@ def extensions(app: Flask):
     captcha.init_app(app)
 
     fik.init_app(app)
+
+    Migrate(app, db)
+
 
 # Context Processor
 def context_processor(app: Flask):

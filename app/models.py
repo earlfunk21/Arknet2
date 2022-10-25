@@ -124,3 +124,23 @@ class Payment(db.Model):
     @hybrid_property
     def is_expired(self):
         return self.due_date < datetime.datetime.now()
+
+
+class Expenses(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    cost = db.Column(db.Integer, nullable=False)
+    created_on = db.Column(db.DateTime(timezone=True),
+                          server_default=db.func.now())
+    receipt = db.Column(db.String(255), unique=True)
+    receipt_id = db.Column(db.Integer, unique=True)
+
+    # relationships
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "user.id", ondelete="CASCADE"), nullable=False)
+    user = db.relationship("User", backref=db.backref("expenses", cascade="all, delete", passive_deletes=True),
+                           foreign_keys=[user_id])
+
+
+    def __str__(self) -> str:
+        return self.name

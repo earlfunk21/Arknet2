@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Expenses Form{% endblock %}
+{% from 'input.html' import render_field %}
+
+
+{% block body %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+    {% include 'includes/logo.html' %}
+    {% include 'includes/navbar.html' %}
+  </header><!-- End Header -->
+
+   <!-- ======= Sidebar ======= -->
+   {% include 'includes/sidenav.html' %}
+
+
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Expenses</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item">Expenses</li>
+          <li class="breadcrumb-item active">Form</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+
+      <section class="section register d-flex flex-column justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="#" class="logo d-flex align-items-center w-auto">
+                  <span class="d-none d-lg-block">Arknet</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Expenses Form</h5>
+                  </div>
+
+                  <form method="post" class="row g-3 needs-validation" novalidate enctype="multipart/form-data">
+                    {{ form.csrf_token }}
+
+                    {{ render_field(form.name) }}
+                    {{ render_field(form.cost, prefix='₱', col='col-6') }}
+                    {{ render_field(form.receipt) }}
+                    {{ render_field(form.admin_key) }}
+
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit" id="submit_btn">Submit</button>
+                    </div>
+
+                    <script>
+                      $(document).ready(function(){
+                          $("#submit_btn").on("click", function(){
+                            $(this)
+                                .text("Loading...")
+                                .attr("disabled", "disabled")
+                                .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+                            $('form').submit();
+                          })
+                      });
+                      </script>
+                      
+
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main><!-- End #main -->
+{% endblock %}

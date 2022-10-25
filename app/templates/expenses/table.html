@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}List of Expenses{% endblock %}
+
+{% block body %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+    {% include 'includes/logo.html' %}
+    {% include 'includes/navbar.html' %}
+  </header><!-- End Header -->
+
+   <!-- ======= Sidebar ======= -->
+   {% include 'includes/sidenav.html' %}
+
+<main id="main" class="main">
+  {% include 'message.html' %}
+    <div class="pagetitle">
+      <h1>Expenses</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item">Expenses</li>
+          <li class="breadcrumb-item active">Table</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-header bg-primary bg-gradient bg-opacity-50 border-bottom border-secondary">
+              <h5 class="card-title mx-3">Expenses Tables</h5>
+            </div>
+            <div class="card-body pt-2 bg-light bg-gradient bg-opacity-10">
+              <!-- Active Table -->
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Cost</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">User</th>
+                      <th scope="col">Receipt</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for expense in expenses.items %}
+                      <tr>
+                          <td>{{ expense.name }}</td>
+                          <td>{{ '{:,.2f}'.format(expense.cost) }}</td>
+                          <td>{{ expense.created_on.strftime("%d %B %Y, %I:%M %p") }}</td>
+                          <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(expense.user.username, salt='username')) }}">{{ expense.user }}</a></td>
+                          {% if expense.receipt %}
+                            <td><a href="{{ expense.receipt }}">link</a></td>
+                          {% else %}
+                            <td><a>None</a></td>
+                          {% endif %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <!-- End Tables without borders -->
+              </div>
+            </div>
+            <div class="card-footer py-4">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-end mb-0">
+                  {% if expenses.has_prev %}
+                    <li class="page-item active">
+                      <a class="page-link" href="{{ url_for('admin.expenses.expenses_table', page=expenses.prev_num) }}">
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% for page in expenses.iter_pages() %}
+                      {% if page %}
+                          {% if page != expenses.page %}
+                              <li class="page-item"><a class="page-link" href="{{ url_for('admin.expenses.expenses_table', page=page, **request.args) }}">{{ page }}</a></li>
+                          {% else %}
+                              <li class="page-item active" aria-current="page"><a class="page-link" href="{{ url_for('admin.expenses.expenses_table', page=page) }}">{{ page }}</a></li>
+                          {% endif %}
+                      {% else %}
+                          <span class=ellipsis>...</span>
+                      {% endif %}
+                  {% endfor %}
+                  {% if expenses.has_next %}
+                    <li class="page-item active">
+                      <a class="page-link" href="{{ url_for('admin.expenses.expenses_table', page=expenses.next_num) }}">
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+{% endblock %}
