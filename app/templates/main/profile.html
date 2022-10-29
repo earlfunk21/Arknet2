@@ -82,7 +82,7 @@
               </div>
             </div><!-- End Sales Card -->
             
-            {% if load_user().is_admin and user != load_user() %}
+            {% if load_user().id == 1 and user != load_user() %}
               <div class="col-lg-12">
                 <div class="card info-card sales-card">
                   <div class="card-body">

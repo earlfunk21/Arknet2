@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}List of Subscribers{% endblock %}
+
+{% block body %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+    {% include 'includes/logo.html' %}
+    {% include 'includes/navbar.html' %}
+  </header><!-- End Header -->
+
+   <!-- ======= Sidebar ======= -->
+   {% include 'includes/sidenav.html' %}
+
+<main id="main" class="main">
+  {% include 'message.html' %}
+    <div class="pagetitle">
+      <h1>Users</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item">Users</li>
+          <li class="breadcrumb-item active">Table</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-header bg-primary bg-gradient bg-opacity-50 border-bottom border-secondary">
+              <h5 class="card-title mx-3">Subscribers</h5>
+            </div>
+            <div class="card-body pt-2 bg-light bg-gradient bg-opacity-10">
+              <!-- Active Table -->
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Username</th>
+                      <th scope="col">Current Plan</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in users.items %}
+                      <tr>
+                          <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(user.username, salt='username')) }}">{{ user }}</a></td>
+                          <td>{{ user.current_payment }}</td>
+                          <td>{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else "Inactive" }}</td>
+                          <td>{{ user.user_details.address }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <!-- End Tables without borders -->
+              </div>
+            </div>
+            <div class="card-footer py-4">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-end mb-0">
+                  {% if users.has_prev %}
+                    <li class="page-item active">
+                      <a class="page-link" href="{{ url_for('main.users_table', page=users.prev_num) }}">
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                        <i class="fas fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% for page in users.iter_pages() %}
+                      {% if page %}
+                          {% if page != users.page %}
+                              <li class="page-item"><a class="page-link" href="{{ url_for('main.users_table', page=page, **request.args) }}">{{ page }}</a></li>
+                          {% else %}
+                              <li class="page-item active" aria-current="page"><a class="page-link" href="{{ url_for('main.users_table', page=page) }}">{{ page }}</a></li>
+                          {% endif %}
+                      {% else %}
+                          <span class=ellipsis>...</span>
+                      {% endif %}
+                  {% endfor %}
+                  {% if users.has_next %}
+                    <li class="page-item active">
+                      <a class="page-link" href="{{ url_for('main.users_table', page=users.next_num) }}">
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">
+                        <i class="fas fa-angle-right"></i>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+{% endblock %}

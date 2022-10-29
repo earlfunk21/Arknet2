@@ -4,6 +4,7 @@ from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
 from app.models import Expenses, Payment, Plan, User, UserDetails
 from app.main import main_bp
+from sqlalchemy import or_
 
 from app.utils import extract_date, loads_token
 from app.models import db
@@ -56,7 +57,7 @@ def dashboard():
         ).limit(5).all()
 
     # Lists of Users
-    users = db.session.query(User).filter(User.is_admin == False).all()
+    users = db.session.query(User).filter(User.id != 1).all()
 
     # Context
     context = dict(
@@ -138,3 +139,22 @@ def is_admin(user_id, is_admin):
     else:
         flash(f"@{user.username} is now user", "success")
     return redirect(url_for("main.dashboard"))
+
+
+@main_bp.route("/users/")
+@main_bp.route("/users/page/<int:page>")
+@require_login
+@admin_required
+def users_table(page=1):
+    token = request.args.get('token')
+    users = User.query.filter(User.id != 1)
+    if token:
+        try:
+            search = loads_token(token, salt='search_username')
+            users = users.filter(or_(User.username.like(f"%{search}%")))
+        except:
+            return abort(403)
+    context = dict(
+        users = users.paginate(page=page, error_out=False, per_page=10)
+    )
+    return render_template("main/users.html", **context)
