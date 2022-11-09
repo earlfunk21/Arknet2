@@ -142,10 +142,9 @@ def is_admin(user_id, is_admin):
 
 
 @main_bp.route("/users/")
-@main_bp.route("/users/page/<int:page>")
 @require_login
 @admin_required
-def users_table(page=1):
+def users_table():
     token = request.args.get('token')
     users = User.query.filter(User.id != 1)
     if token:
@@ -155,6 +154,6 @@ def users_table(page=1):
         except:
             return abort(403)
     context = dict(
-        users = users.paginate(page=page, error_out=False, per_page=10)
+        users = users
     )
     return render_template("main/users.html", **context)
