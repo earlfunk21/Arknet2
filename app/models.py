@@ -97,7 +97,7 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     remarks = db.Column(db.String(80))
     date_paid = db.Column(db.DateTime(timezone=True),
-                          server_default=db.func.now())
+                          default=datetime.datetime.now())
     due_date = db.Column(db.DateTime(timezone=True), nullable=False,
                          default=datetime.datetime.now() + datetime.timedelta(days=30))
     receipt = db.Column(db.String(255), unique=True)
@@ -116,7 +116,7 @@ class Payment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(
         "user.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", backref=db.backref("payments", cascade="all, delete", passive_deletes=True),
-                           foreign_keys=[user_id])
+                            foreign_keys=[user_id])
 
     def __str__(self) -> str:
         return str(self.plan)
@@ -129,9 +129,9 @@ class Payment(db.Model):
 class Expenses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    cost = db.Column(db.Integer, nullable=False)
+    cost = db.Column(db.Float, nullable=False)
     created_on = db.Column(db.DateTime(timezone=True),
-                          server_default=db.func.now())
+                            server_default=db.func.now())
     receipt = db.Column(db.String(255), unique=True)
     receipt_id = db.Column(db.Integer, unique=True)
 
@@ -139,7 +139,7 @@ class Expenses(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(
         "user.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", backref=db.backref("expenses", cascade="all, delete", passive_deletes=True),
-                           foreign_keys=[user_id])
+                            foreign_keys=[user_id])
 
 
     def __str__(self) -> str:

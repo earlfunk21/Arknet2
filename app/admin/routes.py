@@ -40,7 +40,7 @@ def init():
     # Load Users
     workbook = load_workbook("Arknet.xlsx")
     sheet = workbook.active
-    for first_name, last_name in sheet['K3': 'L34']:
+    for last_name, first_name in sheet['K3': 'L34']:
         first_name = str(first_name.value).strip(' ').lower()
         last_name = str(last_name.value).strip(' ').lower()
         username = f"{last_name}.{first_name}"
@@ -63,9 +63,12 @@ def init():
     expenseses = []
     # Load Expenses
     for date, amount, name in sheet['A10': 'C36']:
+        date = str(date.value).replace('Released ', '')
+        date = datetime.strptime(date, '%m/%d/%Y')
+
         expenses = Expenses(
             name=name.value,
-            cost = int(amount.value),
+            cost = float(amount.value),
             created_on=date,
             user=admin
         )
