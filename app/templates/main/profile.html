@@ -224,7 +224,7 @@
                         <i class="ri ri-team-fill"></i>
                       </div>
                       <div class="ps-3">
-                        <h6>{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else "Inactive" }}</h6>
+                        <h6>{{ user.due_date.strftime("%d %B %Y") if user.due_date else "Inactive" }}</h6>
                       </div>
                     </div>
                   </div>

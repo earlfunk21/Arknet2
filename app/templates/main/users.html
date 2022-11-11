@@ -50,7 +50,7 @@
                       <tr>
                           <td><a class="fw-bold text-dark" href="{{ url_for('main.profile', token=dumps_token(user.username, salt='username')) }}">{{ user }}</a></td>
                           <td>{{ user.current_payment }}</td>
-                          <td>{{ user.due_date.strftime("%d %B %Y, %I:%M %p") if user.due_date else "Inactive" }}</td>
+                          <td>{{ user.due_date.strftime("%d %B %Y") if user.due_date else "Inactive" }}</td>
                           <td>{{ user.user_details.address }}</td>
                           <td>{{ "Admin" if user.is_admin else "Subscribers" }}</td>
                       </tr>

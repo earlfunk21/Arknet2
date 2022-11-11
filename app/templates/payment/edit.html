@@ -56,16 +56,18 @@
                     {{ render_field(form.date, col='col-6')}}
                     {{ render_field(form.total, prefix='₱', col='col-6') }}
                     {{ render_field(form.remarks) }}
-                    {{ render_field(form.receipt) }}
                     {{ render_field(form.admin_key) }}
 
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit" id="submit_btn">Submit</button>
+                    <div class="col-6">
+                        <a href="{{ url_for('admin.payment.delete_payment', token=dumps_token(payment_id, salt='delete_payment')) }}" class="btn btn-danger w-100 submit_btn">Delete</a>
+                    </div>
+                    <div class="col-6">
+                      <button class="btn btn-primary w-100 submit_btn" type="submit">Save</button>
                     </div>
 
                     <script>
                       $(document).ready(function(){
-                          $("#submit_btn").on("click", function(){
+                          $(".submit_btn").on("click", function(){
                             $(this)
                                 .text("Loading...")
                                 .attr("disabled", "disabled")

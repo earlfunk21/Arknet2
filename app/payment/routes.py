@@ -17,19 +17,16 @@ def payment_form():
     if form.validate_on_submit():
         remarks = form.remarks.data
         plan = form.plan.data
-        days = form.days.data
+        date = form.date.data
         user = form.user.data
         total = form.total.data
         file = form.receipt.data
-        due_date = datetime.datetime.now() + datetime.timedelta(days=days)
-        if user.recent_payment:
-            due_date = user.recent_payment.due_date + datetime.timedelta(days=days)
         payment = Payment(remarks=remarks,
-                          due_date=due_date,
-                          plan=plan,
-                          user=user,
-                          received_by=load_user(),
-                          amount=total)
+                            due_date=date,
+                            plan=plan,
+                            user=user,
+                            received_by=load_user(),
+                            amount=total)
         response = None
         if file:
             response = fik.upload(file)
@@ -62,3 +59,48 @@ def payment_table(page=1):
     )
     return render_template("payment/table.html", **context)
 
+
+@payment_bp.route("/edit/<token>/", methods=["POST", "GET"])
+@require_login
+@admin_required
+def payment_edit(token):
+    form = PaymentForm()
+    try:
+        payment_id = loads_token(token, salt='edit_payment')
+    except:
+        return abort(403)
+    payment: Payment = Payment.query.get_or_404(payment_id)
+    if form.validate_on_submit():
+        remarks = form.remarks.data
+        plan = form.plan.data
+        date = form.date.data
+        user = form.user.data
+        total = form.total.data
+        payment.remarks = remarks
+        payment.due_date = date
+        payment.plan = plan
+        payment.user = user
+        payment.amount=total
+        db.session.commit()
+        flash("Successfully Edited!", 'success')
+        return redirect(url_for('admin.payment.payment_table'))
+    form.plan.default = payment.plan
+    form.user.default = payment.user
+    form.total.default = payment.amount
+    form.date.default = payment.due_date
+    form.remarks.default = payment.remarks
+    form.process()
+    return render_template('payment/edit.html', form=form, payment_id=payment_id)
+
+
+@payment_bp.route("/delete/<token>/")
+def delete_payment(token):
+    try:
+        payment_id = loads_token(token, salt='delete_payment')
+    except:
+        return abort(403)
+    payment = Payment.query.get_or_404(payment_id)
+    db.session.delete(payment)
+    db.session.commit()
+    flash('Successfully Deleted!', 'success')
+    return redirect(url_for('admin.payment.payment_table'))
