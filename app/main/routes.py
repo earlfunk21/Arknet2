@@ -23,7 +23,7 @@ def dashboard():
     )
 
     # Total Users
-    total_users = len(User.query.filter(User.is_admin==False).all())
+    total_users = len(User.query.filter(User.id != 1).all())
 
     # Total Expenses
     total_expenses = db.session.query(db.func.sum(Expenses.cost)).first()[0] or 0
