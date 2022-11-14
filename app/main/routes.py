@@ -1,4 +1,4 @@
-import datetime
+
 from flask import abort, render_template, request, redirect, url_for, flash, jsonify
 from itsdangerous import BadSignature
 from app.auth.utils import admin_required, load_user, require_login
@@ -30,7 +30,7 @@ def dashboard():
 
     # Total active users
     active_users = len(
-        User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).filter(User.is_admin==False).all()
+        User.query.join(User.payments).filter(Payment.is_expired == False).filter(Payment.user_id == User.id).filter(User.id != 1).all()
     )
 
     # Total Gross Sales
