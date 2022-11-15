@@ -10,7 +10,7 @@ from datetime import datetime
 class PaymentForm(FlaskForm):
     remarks = TextAreaField("Remarks")
     plan = QuerySelectField("Plans", query_factory=lambda: Plan.query, allow_blank=True, validators=[validators.DataRequired()])
-    user = QuerySelectField("Users", query_factory=lambda: User.query.filter(User.id != 1), get_label='username', allow_blank=True, validators=[validators.DataRequired()])
+    user = QuerySelectField("Users", query_factory=lambda: User.query, get_label='username', allow_blank=True, validators=[validators.DataRequired()])
     date = DateField("Due Date", default=datetime.now())
     total = DecimalField("Total Payment", places=2)
     receipt = FileField('Proof of Payment', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
