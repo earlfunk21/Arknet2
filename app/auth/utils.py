@@ -8,7 +8,7 @@ from app.auth import auth_bp
 __all__ = ('authenticate', "login_user", "logout_user", "require_login", "load_user", "already_login")
 
 
-def authenticate(username, password):
+def authenticate(username, password) -> User:
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         return user

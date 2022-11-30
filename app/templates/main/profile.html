@@ -89,6 +89,27 @@
                 </div>
               </div>
             </div><!-- End Sales Card -->
+            
+            <div class="col-lg-12">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Email Address</h5>
+                
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      {% if user.email_address or user.email_address.is_verified %}
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                      {% else %}
+                        <i class="bi bi-check-circle-fill"></i>
+                      {% endif %}
+                    </div>
+                    <div class="ps-3">
+                      <h5 class="card-title">{{ user.email_address }}</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End Sales Card -->
 
           </div>
         </div>

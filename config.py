@@ -37,6 +37,8 @@ class DevelopmentConfig(Config):
 
     FLASK_CAPTCHA_ENABLED = False
 
+    SSL_DISABLE = True
+
 
 # create the production config
 class ProductionConfig(Config):

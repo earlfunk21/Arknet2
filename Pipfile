@@ -16,6 +16,8 @@ captcha = "*"
 gunicorn = "*"
 imagekitio = "*"
 flask-session = "*"
+flask-talisman = "*"
+email-validator = "*"
 
 [dev-packages]
 black = "*"

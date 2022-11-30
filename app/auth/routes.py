@@ -2,10 +2,11 @@
 from flask import abort, flash, redirect, render_template, url_for, request
 from itsdangerous import BadSignature, SignatureExpired
 from app.auth import auth_bp
-from app.auth.forms import UpdateSecretQuestion, UserDetailsForm, ForgotPasswordForm, LoginForm, RegistrationForm, UpdatePasswordForm
+from app.auth.forms import *
 from app.auth.utils import *
-from app.models import SecretQuestion, db, UserDetails, User
+from app.models import SecretQuestion, db, UserDetails, User, EmailAddress
 from app.utils import dumps_token, loads_token
+from send_email import send_email
 
 
 @auth_bp.route("/login/", methods=["GET", "POST"])
@@ -131,3 +132,50 @@ def update_secret_question():
         db.session.commit()
         return redirect(url_for('main.profile'))
     return render_template("auth/update_sq.html", form=form)
+
+
+@auth_bp.route("/verify_email/", methods=["GET", "POST"])
+@require_login
+def verify_email():
+    user = load_user()
+    form = VerifyEmailAddress()
+    if form.validate_on_submit():
+        email = form.email.data
+        if user.email_address is not None:
+            user.email_address = email
+        else:
+            user.email_address = EmailAddress(email=email)
+        token = dumps_token(user.username, "verify_email_address")
+        link = url_for("auth.confirm_email", token=token, _external=True)
+        html = """\
+        <html>
+        <body>
+            <p>Click this link to verify your account<br>
+            <a href="{}">Confirm</a> 
+            has many great tutorials.
+            </p>
+        </body>
+        </html>
+        """.format(link)
+        send_email(email, "Email verification", html)
+        db.session.commit()
+        flash("Please check your email to confirm", category="success")
+        return redirect(url_for("main.profile"))
+    form.email.default = user.email_address
+    form.process()
+    return render_template("auth/verify_email.html", form=form)
+
+
+@auth_bp.route("/confirm_email/<token>")
+def confirm_email(token):
+    if token:
+        try:
+            username = loads_token(token, 1800, "verify_email_address")
+            user = db.session.query(User).filter(User.username == username).first()
+            user.email_address.is_verified = True
+            db.session.commit()
+            return "Congratulation! Your account is now verified. You can now close this site"
+        except SignatureExpired:
+            flash("Link is expired")
+    else:
+        abort(403)

@@ -16,12 +16,21 @@ class SecretQuestion(db.Model):
         return self.question
 
 
+class EmailAddress(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    is_verified = db.Column(db.Boolean, default=False)
+
+    def __str__(self) -> str:
+        return self.email
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), nullable=False, unique=True)
     _password = db.Column(db.String(120), nullable=False)
     created_on = db.Column(db.DateTime(timezone=True),
-                           server_default=db.func.now())
+                            server_default=db.func.now())
     last_modified = db.Column(db.DateTime(
         timezone=True), nullable=False, server_default=db.func.now())
     last_login = db.Column(db.DateTime(timezone=True))
@@ -31,12 +40,15 @@ class User(db.Model):
     secret_question_id = db.Column(db.Integer, db.ForeignKey(
         "secret_question.id", ondelete="CASCADE"))
     secret_question = db.relationship("SecretQuestion", backref=db.backref("user", uselist=False, cascade="all, delete",
-                                                                       passive_deletes=True))
+                                                                        passive_deletes=True))
 
     user_details_id = db.Column(db.Integer, db.ForeignKey(
         "user_details.id", ondelete="CASCADE"))
     user_details = db.relationship("UserDetails", backref=db.backref("user", uselist=False, cascade="all, delete",
-                                                                     passive_deletes=True))
+                                                                        passive_deletes=True))
+
+    email_address_id = db.Column(db.Integer, db.ForeignKey("email_address.id", ondelete="CASCADE"))
+    email_address = db.relationship("EmailAddress", backref=db.backref("user", uselist=False, cascade="all, delete", passive_deletes=True))
 
     def __str__(self):
         return f"@{self.username}"

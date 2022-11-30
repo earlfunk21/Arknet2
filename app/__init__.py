@@ -8,13 +8,15 @@ from app.models import db
 from app.extensions.imagekit import FlaskImageKit
 from .extensions.flask_captcha import FlaskCaptcha
 from flask_migrate import Migrate
+from flask_talisman import Talisman
 
 
 captcha = FlaskCaptcha()
 fik = FlaskImageKit()
+talisman = Talisman()
 
 
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -48,6 +50,10 @@ def blueprints(app: Flask):
     from app.main import main_bp
     app.register_blueprint(main_bp)
 
+    # API
+    from app.api import api_bp
+    app.register_blueprint(api_bp)
+
 
 # Extensions initialize
 def extensions(app: Flask):
@@ -61,6 +67,7 @@ def extensions(app: Flask):
 
     Migrate(app, db)
 
+    talisman.init_app(app)
 
 # Context Processor
 def context_processor(app: Flask):

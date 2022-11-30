@@ -1,8 +1,8 @@
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, PasswordField, SelectField
+from wtforms import StringField, validators, PasswordField, SelectField, EmailField
 
-from app.models import SecretQuestion, User
+from app.models import User
 from app.utils import captcha_validator
 
 
@@ -79,4 +79,7 @@ class UpdateSecretQuestion(FlaskForm):
                                                     ('What was your favorite food as a child?')])
     
     answer = StringField("Answer", validators=[validators.InputRequired()])
-    
+
+
+class VerifyEmailAddress(FlaskForm):
+    email = EmailField("Email Address", validators=[validators.InputRequired(), validators.Email()])
