@@ -98,13 +98,13 @@
         </a>
         <ul id="secret_question-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a class="nav-link collapsed" href="{{ url_for('auth.update_secret_question') }}">
-              <i class="bi bi-question-circle"></i><span>Update Secret Question</span>
+            <a class="nav-link collapsed" href="{{ url_for('auth.change_password') }}">
+              <i class="bi bi-lock"></i><span>Change Password</span>
             </a>
           </li>
           <li>
-            <a class="nav-link collapsed" href="{{ url_for('auth.update_password', token=dumps_token(load_user().username, salt='forgot_password')) }}">
-              <i class="bi bi-lock"></i><span>Update Password</span>
+            <a class="nav-link collapsed" href="{{ url_for('auth.change_email') }}">
+              <i class="bi bi-lock"></i><span>Change Email</span>
             </a>
           </li>
         </ul>

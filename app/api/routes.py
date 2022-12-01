@@ -1,8 +1,12 @@
-from flask import jsonify
+from flask import jsonify, session
 from app.api import api_bp
 from app.models import db, User, Payment
 
 import datetime
+
+import random
+
+from send_email import send_email
 
 
 @api_bp.route("/inactive_users")

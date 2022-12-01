@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Verify Email{% endblock %}
+{% block title %}Update Email{% endblock %}
 {% from 'input.html' import render_field %}
 
 
@@ -23,16 +23,19 @@
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Verify Email</h5>
+                    <h5 class="card-title text-center pb-0 fs-4">Change Email Address</h5>
                   </div>
-
-                  {% include 'message.html' %}
 
                   <form method="post" class="row g-3 needs-validation" novalidate>
                     {{ form.csrf_token }}
                     {{ render_field(form.email)}}
+                    {{ render_field(form.confirm_email)}}
+                    <div class="d-flex justify-content-between col-12">
+                      {{ render_field(form.code, col='col-8')}}
+                      <a class="btn btn-success btn-lg active col-3" id="send_code" role="button" aria-pressed="true">Send Code</a>
+                    </div>
                     <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Submit</button>
+                      <button class="btn btn-primary w-100" type="submit">Update</button>
                     </div>
                   </form>
                 </div>

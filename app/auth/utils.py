@@ -2,7 +2,6 @@
 from os import abort
 from flask import redirect, request, session, url_for
 from app.models import db, User
-from app.auth import auth_bp
 
 
 __all__ = ('authenticate', "login_user", "logout_user", "require_login", "load_user", "already_login")

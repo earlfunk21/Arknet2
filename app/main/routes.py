@@ -81,7 +81,7 @@ def dashboard():
 @require_login
 def profile(token):
     user = load_user()
-    if user.email_address is None or not user.email_address.is_verified:
+    if user.email is None or not user.is_email_verified:
         flash(Markup(f'Please <a href="{url_for("auth.verify_email")}" >click here </a> to verify your email address'), category="warning")
     if token:
         try:

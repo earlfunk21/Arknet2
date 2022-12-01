@@ -2,12 +2,14 @@
 
 import datetime
 from itsdangerous import URLSafeTimedSerializer
-from flask import request
+from flask import request, session
 from sqlalchemy import extract
 import timeago
 from app import captcha
 from wtforms import ValidationError
+import random
 
+from send_email import send_email
 s = URLSafeTimedSerializer("arkhnet")
 
 
@@ -34,3 +36,6 @@ def time_ago(date):
 def captcha_validator(form, field):
     if not captcha.validate(field.data):
         raise ValidationError('Invalid Captcha')
+
+def check_code(code):
+    return code == session.get('verification_code')

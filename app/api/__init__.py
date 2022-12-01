@@ -9,7 +9,7 @@ def api_request():
 
     auth = request.authorization
     user = authenticate(auth.username, auth.password)
-    if not (auth and user.is_admin):
+    if not (user and user.is_admin):
         return ('Unauthorized', 401, {
             'WWW-Authenticate': 'Basic realm="Login Required"'
         })

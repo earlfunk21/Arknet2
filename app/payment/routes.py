@@ -47,17 +47,19 @@ def payment_form():
 @admin_required
 def payment_table(page=1):
     token = request.args.get('token')
+    file = "payment/table.html"
     payments = Payment.query.order_by(Payment.date_paid.desc())
     if token:
         try:
             search = loads_token(token, salt='search_username')
             payments = payments.join(Payment.user).filter(or_(User.username.like(f"%{search}%")))
+            file = "payment/my_table.html"
         except:
             return abort(403)
     context = dict(
         payments=payments.paginate(page=page, error_out=False, per_page=10)
     )
-    return render_template("payment/table.html", **context)
+    return render_template(file, **context)
 
 
 @payment_bp.route("/edit/<token>/", methods=["POST", "GET"])

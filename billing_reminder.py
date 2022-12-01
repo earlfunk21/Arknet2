@@ -3,7 +3,7 @@ import requests
 
 from send_email import send_email
 
-auth = HTTPBasicAuth("admin", "admin123")
+auth = HTTPBasicAuth("admin", "admin1234")
 
 url = "http://127.0.0.1:6901"
 

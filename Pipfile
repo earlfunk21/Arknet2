@@ -18,6 +18,7 @@ imagekitio = "*"
 flask-session = "*"
 flask-talisman = "*"
 email-validator = "*"
+black = "*"
 
 [dev-packages]
 black = "*"
