@@ -6,16 +6,6 @@ from sqlalchemy import desc
 
 db = SQLAlchemy()
 
-
-class SecretQuestion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(255), nullable=False)
-    answer = db.Column(db.String(255), nullable=False)
-
-    def __str__(self):
-        return self.question
-
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), nullable=False, unique=True)
@@ -30,12 +20,6 @@ class User(db.Model):
     is_email_verified = db.Column(db.Boolean, default=False)
 
     # relationships
-    secret_question_id = db.Column(db.Integer, db.ForeignKey(
-        "secret_question.id", ondelete="CASCADE"))
-    secret_question = db.relationship("SecretQuestion", backref=db.backref("user", uselist=False, cascade="all, delete",
-                                                                        passive_deletes=True))
-
-
     user_details_id = db.Column(db.Integer, db.ForeignKey(
         "user_details.id", ondelete="CASCADE"))
     user_details = db.relationship("UserDetails", backref=db.backref("user", uselist=False, cascade="all, delete",
