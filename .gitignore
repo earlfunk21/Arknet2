@@ -163,6 +163,5 @@ cython_debug/
 .idea/
 
 dev-data.db
-*.db
 
 migrations
