@@ -73,15 +73,16 @@ def extensions(app: Flask):
     csp = {
         # Fonts from fonts.google.com
         "default-src": ["'self'"],
-        "script-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
         "font-src": ["'self'", "fonts.gstatic.com"],
-        "style-src": ["'self'", "fonts.googleapis.com"],
+        "style-src": ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
+	'img-src': ["*", "'self'", "data:", "https:"],
     }
 
     talisman.init_app(
         app,
-        content_security_policy=csp,
-        content_security_policy_nonce_in=["script-src"],
+        content_security_policy=csp
+      
     )
 
 

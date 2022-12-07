@@ -23,8 +23,11 @@ class FlaskCaptcha(object):
         self.answer = str(random.randrange(10**self.length)).zfill(self.length)
 
         app.jinja_env.globals["captcha"] = self.captcha_html
-
+        
+        from app import talisman
+        from flask_talisman import ALLOW_FROM
         @app.route("/generate_captcha/")
+       	@talisman(frame_options=ALLOW_FROM, frame_options_allow_from='*')
         def generate_captcha():
             return jsonify(data=self.generate())
 
@@ -53,7 +56,7 @@ class FlaskCaptcha(object):
                       <a onclick="setCaptcha();" class="btn border-0 btn-success">Refresh</a>
                     </div>
                   </div>
-                  <script>
+                  <script nonce="{{ csp_nonce() }}">
                     function setCaptcha(){
                       $.getJSON('%s', function(data){
                         $('#captcha').attr('src', 'data:image/png;base64, ' + data.data)
