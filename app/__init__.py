@@ -16,7 +16,7 @@ fik = FlaskImageKit()
 talisman = Talisman()
 
 
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -72,18 +72,17 @@ def extensions(app: Flask):
 
     csp = {
         # Fonts from fonts.google.com
-        "font-src": "'self' themes.googleusercontent.com *.gstatic.com",
-        # <iframe> based embedding for Maps and Youtube.
-        "frame-src": "'self' www.google.com www.youtube.com",
-        # astorted Google-hosted Libraries/APIs.
-        "script-src": "'self' ajax.googleapis.com *.googleastytics.com "
-        "*.google-astytics.com",
-        # Used by generated code from http://www.google.com/fonts
-        "style-src": "'self' ajax.googleapis.com fonts.googleapis.com " "*.gstatic.com",
-        "default-src": "'self' *.gstatic.com",
+        "default-src": ["'self'"],
+        "script-src": ["'self'"],
+        "font-src": ["'self'", "fonts.gstatic.com"],
+        "style-src": ["'self'", "fonts.googleapis.com"],
     }
 
-    talisman.init_app(app, content_security_policy=csp, content_security_policy_nonce_in=['script-src'])
+    talisman.init_app(
+        app,
+        content_security_policy=csp,
+        content_security_policy_nonce_in=["script-src"],
+    )
 
 
 # Context Processor
