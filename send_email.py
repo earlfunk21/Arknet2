@@ -3,6 +3,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
+'''
 def send_email(receiver_email, subject, html):
     sender_email = "earlfunk21@gmail.com"
     password = "qmouojxbwvnxtnhk"
@@ -29,3 +30,52 @@ def send_email(receiver_email, subject, html):
         server.sendmail(
             sender_email, receiver_email, message.as_string()
         )
+'''
+
+def send_email(receiver_email, subject, html):
+    import boto3
+    from botocore.exceptions import ClientError
+    SENDER = "earlfunk21@gmail.com"
+    RECIPIENT = receiver_email
+
+    CONFIGURATION_SET = "ConfigSet"
+    AWS_REGION = "us-west-2"
+    SUBJECT = subject
+    BODY_TEXT = ("Welcome to Arknet Fiber\r\n")            
+    BODY_HTML = html
+    CHARSET = "UTF-8"
+    client = boto3.client('ses',region_name=AWS_REGION)
+    try:
+			#Provide the contents of the email.
+			response = client.send_email(
+				Destination={
+					'ToAddresses': [
+						RECIPIENT,
+					],
+				},
+				Message={
+					'Body': {
+						'Html': {
+							'Charset': CHARSET,
+							'Data': BODY_HTML,
+						},
+						'Text': {
+							'Charset': CHARSET,
+							'Data': BODY_TEXT,
+						},
+					},
+					'Subject': {
+						'Charset': CHARSET,
+						'Data': SUBJECT,
+					},
+				},
+				Source=SENDER,
+				# If you are not using a configuration set, comment or delete the
+				# following line
+				ConfigurationSetName=CONFIGURATION_SET,
+			)
+    except ClientError as e:
+    	print(e.response['Error']['Message'])
+    else:
+   	print("Email sent! Message ID:"),
+    	print(response['MessageId'])
