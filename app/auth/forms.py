@@ -104,15 +104,6 @@ class ChangeEmailVerification(FlaskForm):
             raise validators.ValidationError(f"{field.data} already exists")
 
 
-class ForgotPasswordForm(FlaskForm):
-
-    username = StringField("Username", validators=[validators.InputRequired()])
-
-    def validate_username(form, field):
-        if not User.query.filter_by(username=field.data).first():
-            raise validators.ValidationError(f"{field.data} doesn't exist!")
-
-
 class UserDetailsForm(FlaskForm):
     first_name = StringField("First Name", validators=[validators.InputRequired()])
     middle_name = StringField("Middle Name")
@@ -131,3 +122,12 @@ class VerifyEmailAddress(FlaskForm):
         user = User.query.filter_by(email=field.data).first()
         if user and user.is_email_verified:
             raise validators.ValidationError(f"{field.data} already exists")
+
+
+class ForgotPasswordForm(VerifyEmailAddress):
+    
+    def validate_email(form, field):
+        user = User.query.filter_by(email=field.data).first()
+        if not (user or user.is_email_verified):
+            raise validators.ValidationError(f"{field.data} doesn't exists")
+        

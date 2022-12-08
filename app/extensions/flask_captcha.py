@@ -27,7 +27,7 @@ class FlaskCaptcha(object):
         from app import talisman
         from flask_talisman import ALLOW_FROM
         @app.route("/generate_captcha/")
-       	@talisman(frame_options=ALLOW_FROM, frame_options_allow_from='*')
+        @talisman(frame_options=ALLOW_FROM, frame_options_allow_from='*')
         def generate_captcha():
             return jsonify(data=self.generate())
 
