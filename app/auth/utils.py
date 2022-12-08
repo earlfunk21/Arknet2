@@ -53,13 +53,3 @@ def admin_required(func):
 def load_user() -> User:
     return User.query.filter_by(username=session.get("username")).first()
 
-
-def verify_email_identity(email_address):
-    ses_client = boto3.client("ses", region_name="us-east-1")
-    response = ses_client.verify_email_identity(
-        # Email address that will receive the email 
-        # In my case the same email address 
-        # that was verified on Amazon SES
-        EmailAddress=email_address
-    )
-    return response
