@@ -70,19 +70,9 @@ def extensions(app: Flask):
 
     Migrate(app, db)
 
-    csp = {
-        # Fonts from fonts.google.com
-        "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "font-src": ["'self'", "fonts.gstatic.com"],
-        "style-src": ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
-	'img-src': ["*", "'self'", "data:", "https:"],
-    }
-
     talisman.init_app(
         app,
-        content_security_policy=csp
-      
+        content_security_policy=app.config.get('CSP')
     )
 
 

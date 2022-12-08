@@ -87,9 +87,24 @@ def register_about(token):
 def forgot_password():
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        username = form.username.data
-        token = dumps_token(username, salt="forgot_password")
-        return redirect(url_for("auth.update_password", token=token))
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        token = dumps_token(user.username, salt="change_password")
+        link = url_for("auth.update_password", token=token, _external=True)
+        html = """\
+        <html>
+        <body>
+            <p>Click this link to change your password<br>
+            <a href="{}">Change</a>
+            </p>
+        </body>
+        </html>
+        """.format(
+            link
+        )
+        send_email(user.email, "Retrieve Password", html)
+        flash("Please check your email to retrieve your password", category="success")
+        return redirect(url_for("auth.login", token=token))
     return render_template("auth/forgot_password.html", form=form)
 
 
@@ -99,12 +114,12 @@ def update_password(token):
     user = load_user()
     if token:
         try:
-            data = loads_token(token, max_age=1800, salt="change_password")
-            user = User.query.filter_by(username=data["username"]).first()
+            username = loads_token(token, max_age=1800, salt="change_password")
+            user = User.query.filter_by(username=username).first()
         except SignatureExpired:
             abort(401)
     if not user:
-        return redirect(url_for("auth.forgot_password"))
+        return redirect(url_for("auth.change_password"))
     form = UpdatePasswordForm()
     if form.validate_on_submit():
         password = form.password.data
@@ -179,7 +194,8 @@ def confirm_email(token):
             user = db.session.query(User).filter(User.username == username).first()
             user.is_email_verified = True
             db.session.commit()
-            return "Congratulation! Your account is now verified. You can now close this site"
+            flash("Congratulation! Your account is now verified!", "success")
+            return redirect(url_for("main.profile"))
         except SignatureExpired:
             abort(401)
     else:
@@ -224,6 +240,7 @@ def update_email(token):
             db.session.commit()
         except SignatureExpired:
             abort(401)
-    return "<h1>Your Email change successfully. You may now close this page</h1>"
+    flash(f"Your Email change to {user.hide_email()} successfully.", "success")
+    return redirect(url_for("main.profile"))
 
 
