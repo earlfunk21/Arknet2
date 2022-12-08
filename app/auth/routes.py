@@ -4,9 +4,11 @@ from itsdangerous import BadSignature, SignatureExpired
 from app.auth import auth_bp
 from app.auth.forms import *
 from app.auth.utils import *
+from app.auth.utils import verify_email_identity
 from app.models import db, UserDetails, User
 from app.utils import dumps_token, loads_token
 from send_email import send_email
+from botocore.exceptions import ClientError
 
 
 @auth_bp.route("/login/", methods=["GET", "POST"])
@@ -163,6 +165,10 @@ def verify_email():
     form = VerifyEmailAddress()
     if form.validate_on_submit():
         email = form.email.data
+        try:
+            verify_email_identity(email)
+        except ClientError:
+            abort(403)
         token = dumps_token(user.username, "verify_email_address")
         link = url_for("auth.confirm_email", token=token, _external=True)
         html = """\
