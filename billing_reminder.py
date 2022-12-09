@@ -8,7 +8,7 @@ from send_email import send_email
 
 auth = HTTPBasicAuth("admin", "admin123")
 
-url = "http://127.0.0.1:6901"
+url = "https://app.arknetfiber.com"
 
 def get_html_almost(username, plan, date):
     return """\
@@ -38,13 +38,18 @@ def check_almost_expired():
         res = requests.get(f"{url}/api/almost_expired_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            users = []
             if res.json() is list:
-                users = res.json()
+                for user in res.json():
+                    username = user["username"]
+                    plan = user["plan"]
+                    date = user["date"]
+                    print(username, plan, date)
+                    send_email(None, "Billing reminder", get_html_almost(username, plan, date))
             else:
-                users.append(res.json())
-            for user in users:
-                send_email(None, "Billing reminder", get_html_almost(user["username"], user["plan"], user["date"]))
+                username = res.json()["username"]
+                plan = res.json()["plan"]
+                date = res.json()["date"]
+                send_email(None, "Billing reminder", get_html_almost(username, plan, date))
 
     except ConnectionError:
         print("Connection error")
@@ -55,13 +60,15 @@ def check_expired_users():
         res = requests.get(f"{url}/api/inactive_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            users = []
             if res.json() is list:
-                users = res.json()
+                for user in res.json():
+                    username = user["username"]
+                    plan = user["plan"]
+                    send_email(None, "Billing reminder", get_html_expired(username, plan))
             else:
-                users.append(res.json())
-            for user in users:
-                send_email(None, "Billing reminder", get_html_expired(user["username"], user["plan"]))
+                username = res.json()["username"]
+                plan = res.json()["plan"]
+                send_email(None, "Billing reminder", get_html_expired(username, plan))
 
     except ConnectionError:
         print("Connection error")
