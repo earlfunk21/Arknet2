@@ -2,6 +2,7 @@ import datetime
 from requests.auth import HTTPBasicAuth
 import requests
 from requests.exceptions import ConnectionError
+import json
 
 from send_email import send_email
 
@@ -45,7 +46,7 @@ def check_almost_expired():
                     date = user["date"]
                     print(username, plan, date)
                     send_email(None, "Billing reminder", get_html_almost(username, plan, date))
-            else:
+            elif res is json:
                 username = res.json()["username"]
                 plan = res.json()["plan"]
                 date = res.json()["date"]
@@ -65,10 +66,11 @@ def check_expired_users():
                     username = user["username"]
                     plan = user["plan"]
                     send_email(None, "Billing reminder", get_html_expired(username, plan))
-            else:
+            elif res is json:
                 username = res.json()["username"]
                 plan = res.json()["plan"]
                 send_email(None, "Billing reminder", get_html_expired(username, plan))
+            
 
     except ConnectionError:
         print("Connection error")
