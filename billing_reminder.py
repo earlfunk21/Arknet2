@@ -38,7 +38,7 @@ def check_almost_expired():
         res = requests.get(f"{url}/api/almost_expired_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            if res.json() is list:
+            if res is list:
                 for user in res.json():
                     username = user["username"]
                     plan = user["plan"]
@@ -60,7 +60,7 @@ def check_expired_users():
         res = requests.get(f"{url}/api/inactive_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            if res.json() is list:
+            if res is list:
                 for user in res.json():
                     username = user["username"]
                     plan = user["plan"]
