@@ -10,36 +10,41 @@ auth = HTTPBasicAuth("admin", "admin123")
 
 url = "http://127.0.0.1:6901"
 
-def get_html_almost(username, days):
+def get_html_almost(username, plan, date):
     return """\
             <html>
             <body>
-                <h1>Hi! {}. Your Plan was going to expire soon.</h1>
-                <h3>Days left before expiration: {}</h3>
+                <h1>Hi! {}. Your plan was going to expire soon.</h1>
+                <p>Plan: <b>{}</b></p><br/>
+                <p>Expired on <b>{}</b>.</p>
             </body>
             </html>
-            """.format(username, days)
+            """.format(username, plan, date)
 
 
-def get_html_expired(username):
+def get_html_expired(username, plan):
     return """\
             <html>
             <body>
                 <h1>Hi! {}. Your plan has been expired.</h1>
+                <p>Plan: <b>{}</b></p><br/>
                 <p>Please update your plan now.</p>
             </body>
             </html>
-            """.format(username)
+            """.format(username, plan)
 
 def check_almost_expired():
     try:
         res = requests.get(f"{url}/api/almost_expired_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            for user in res.json():
-                date = datetime.datetime.strptime(user["date"], "%Y-%m-%d") - datetime.datetime.today()
-                username = user["username"]
-                send_email(None, "Billing reminder", get_html_almost(username, date.days))
+            users = []
+            if res is not list:
+                users.append(res.json())
+            else:
+                users = res.json()
+            for user in users:
+                send_email(None, "Billing reminder", get_html_almost(user["username"], user["plan"], user["date"]))
 
     except ConnectionError:
         print("Connection error")
@@ -50,13 +55,13 @@ def check_expired_users():
         res = requests.get(f"{url}/api/inactive_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            if res is list:
-                for user in res.json():
-                    username = user["username"]
-                    send_email(None, "Billing reminder", get_html_expired(username))
+            users = []
+            if res is not list:
+                users.append(res.json())
             else:
-                username = res.json()["username"]
-                send_email(None, "Billing reminder", get_html_expired(username))
+                users = res.json()
+            for user in users:
+                send_email(None, "Billing reminder", get_html_expired(user["username"], user["plan"]))
 
     except ConnectionError:
         print("Connection error")

@@ -11,7 +11,7 @@ def inactive_users():
     data = []
     for user in users:
         if user.recent_payment.is_expired == True and user.recent_payment.due_date + datetime.timedelta(days=7) > datetime.datetime.now():
-            data.append(dict(username=user.username))
+            data.append(dict(username=user.username, plan=str(user.recent_payment.plan)))
     return jsonify(*data)
 
 
@@ -21,5 +21,5 @@ def almost_expired_users():
     data = []
     for user in users:
         if user.recent_payment.due_date - datetime.timedelta(days=3) < datetime.datetime.now() and not user.recent_payment.is_expired:
-            data.append(dict(username=user.username, date=user.recent_payment.due_date.strftime("%Y-%m-%d")))
+            data.append(dict(username=user.username, date=user.recent_payment.due_date.strftime("%a, %d %b %Y"), plan=str(user.recent_payment.plan)))
     return jsonify(*data)
