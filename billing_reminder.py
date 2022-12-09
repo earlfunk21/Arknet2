@@ -39,10 +39,10 @@ def check_almost_expired():
 
         if res.status_code == 200:
             users = []
-            if res is not list:
-                users.append(res.json())
-            else:
+            if res.json() is list:
                 users = res.json()
+            else:
+                users.append(res.json())
             for user in users:
                 send_email(None, "Billing reminder", get_html_almost(user["username"], user["plan"], user["date"]))
 
@@ -56,10 +56,10 @@ def check_expired_users():
 
         if res.status_code == 200:
             users = []
-            if res is not list:
-                users.append(res.json())
-            else:
+            if res.json() is list:
                 users = res.json()
+            else:
+                users.append(res.json())
             for user in users:
                 send_email(None, "Billing reminder", get_html_expired(user["username"], user["plan"]))
 
