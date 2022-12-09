@@ -1,9 +1,9 @@
-
 from flask import abort, flash, redirect, render_template, url_for, request, session
 from itsdangerous import BadSignature, SignatureExpired
 from app.auth import auth_bp
 from app.auth.forms import *
 from app.auth.utils import *
+from app.auth.utils import admin_required
 from app.models import db, UserDetails, User
 from app.utils import dumps_token, loads_token
 from send_email import send_email
@@ -33,27 +33,41 @@ def logout():
     return redirect(url_for("auth.login"))
 
 
-@auth_bp.route("/register/", methods=["GET", "POST"])
-@already_login
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        user = {"username": username, "password": password}
-        token = dumps_token(user, salt="register")
-        return redirect(url_for("auth.register_about", token=token))
-    return render_template("auth/register.html", form=form)
-
-
-@auth_bp.route("/register/about/<token>/", methods=["GET", "POST"])
-def register_about(token):
+@auth_bp.route("/register/<token>/", methods=["GET", "POST"])
+def register(token):
     try:
-        token = loads_token(token, max_age=1800, salt="register")
+        token = loads_token(token, max_age=86400, salt="register")
     except SignatureExpired:
         return abort(401)
     except BadSignature:
         return abort(401)
+
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        user_details = UserDetails(
+            first_name=token["first_name"],
+            middle_name=token["middle_name"],
+            last_name=token["last_name"],
+            address=token["address"],
+            phone=token["phone"],
+            social_media=token["social_media"],
+        )
+        user = User(username=username, password=password, user_details=user_details)
+        db.session.add(user)
+        db.session.commit()
+        flash("Successfully created an account!", "success")
+        return redirect(url_for("auth.login"))
+    return render_template("auth/register.html", form=form)
+
+
+
+@auth_bp.route("/create_subscriber", methods=["GET", "POST"])
+@require_login
+@admin_required
+def create_subscriber():
     form = UserDetailsForm()
     if form.validate_on_submit():
         first_name = form.first_name.data.capitalize()
@@ -62,7 +76,7 @@ def register_about(token):
         address = form.address.data.title()
         phone = form.phone.data
         social_media = form.social_media.data
-        user_details = UserDetails(
+        data = dict(
             first_name=first_name,
             middle_name=middle_name,
             last_name=last_name,
@@ -70,16 +84,18 @@ def register_about(token):
             phone=phone,
             social_media=social_media,
         )
-        user = User(
-            username=token["username"],
-            password=token["password"],
-            user_details=user_details,
-        )
-        db.session.add(user)
-        db.session.commit()
-        flash("Successfully Created!", "success")
-        return redirect(url_for("auth.login"))
-    return render_template("auth/register_about.html", form=form)
+        token = dumps_token(data, salt="register")
+        link = url_for("auth.register", token=token, _external=True)
+        return redirect(url_for("auth.create_link", link=link))
+    return render_template("auth/create_subs.html", form=form)
+
+
+@auth_bp.route("/create_link")
+@require_login
+@admin_required
+def create_link():
+    link = request.args.get("link")
+    return render_template("auth/create_subs_link.html", link=link)
 
 
 @auth_bp.route("/forgot_password/", methods=["GET", "POST"])
@@ -201,6 +217,7 @@ def confirm_email(token):
     else:
         abort(403)
 
+
 @auth_bp.route("/change_email", methods=["POST", "GET"])
 @require_login
 def change_email():
@@ -242,5 +259,3 @@ def update_email(token):
             abort(401)
     flash(f"Your Email change to {user.hide_email()} successfully.", "success")
     return redirect(url_for("main.profile"))
-
-

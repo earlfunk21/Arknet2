@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Create Subscriber{% endblock %}
+
+{% from 'input.html' import render_field %}
+
+{% block body %}
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center bg-info bg-gradient bg-opacity-50">
+  {% include 'includes/logo.html' %}
+  {% include 'includes/navbar.html' %}
+  <style>
+    #link:hover{
+      cursor: pointer;
+    }
+  </style>
+</header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+{% include 'includes/sidenav.html' %}
+
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Subscriber</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+        <li class="breadcrumb-item">Subscriber</li>
+        <li class="breadcrumb-item active">Create</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <div class="container">
+
+    <section class="section register d-flex flex-column justify-content-center py-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+            <div class="d-flex justify-content-center py-4">
+              <a href="#" class="logo d-flex align-items-center w-auto">
+                <span class="d-none d-lg-block">Arknet</span>
+              </a>
+            </div><!-- End Logo -->
+
+            <div class="card mb-3 w-100">
+
+              <div class="card-body">
+
+                <div class="pt-4 pb-2">
+                  <h5 class="card-title text-center pb-0 fs-4">Copy this link</h5>
+                </div>
+
+                <div class="form row g-3">
+                  <div class="col-12">
+                    <input id="url" type="text" readonly class="form-control my-3" value="{{ link }}">
+                    </div>
+                  </div>
+                  <div class="col-12 my-3">
+                    <button class="btn btn-primary w-100" type="button" onclick="copy();">Copy</button>
+                  </div>
+                </div>
+                
+                <script>
+                  var url = document.querySelector("#url")
+                  url.addEventListener("focus", () => url.select());
+
+                  function copy() {
+                    url.select();
+                    navigator.clipboard.writeText(url.value);
+                  }
+                </script>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+</main><!-- End #main -->
+{% endblock %}

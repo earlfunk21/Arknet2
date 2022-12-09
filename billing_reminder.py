@@ -42,7 +42,6 @@ def check_almost_expired():
                     username = user["username"]
                     plan = user["plan"]
                     date = user["date"]
-                    print(username, plan, date)
                     send_email(None, "Billing reminder", get_html_almost(username, plan, date))
             else:
                 username = res.json()["username"]

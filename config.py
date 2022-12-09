@@ -39,7 +39,14 @@ class DevelopmentConfig(Config):
 
     SSL_DISABLE = True
 
-    CSP = {"default-src": "'self'"}
+    CSP = {
+        # Fonts from fonts.google.com
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "font-src": ["'self'", "fonts.gstatic.com"],
+        "style-src": ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
+        "img-src": ["*", "'self'", "data:", "https:"],
+    }
 
 
 # create the production config

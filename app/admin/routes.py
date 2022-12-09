@@ -23,6 +23,7 @@ def remove_user(username):
     if not user:
         print("username not found. Please try again")
         return
+    db.session.delete(user.user_details)
     db.session.delete(user)
     db.session.commit()
     print("Successfully removed")
