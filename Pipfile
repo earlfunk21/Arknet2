@@ -19,6 +19,7 @@ flask-session = "*"
 flask-talisman = "*"
 email-validator = "*"
 black = "*"
+requests = "*"
 
 [dev-packages]
 black = "*"
