@@ -15,8 +15,7 @@ def get_html_almost(username, plan, date):
     return """\
             <html>
             <body>
-                <h1>Hi! {}. Your plan was going to expire soon.</h1>
-                <p>Plan: <b>{}</b></p><br/>
+                <h1>Hi! {}. Your plan: {}. was going to expire soon.</h1>
                 <p>Expired on <b>{}</b>.</p>
             </body>
             </html>
@@ -27,8 +26,7 @@ def get_html_expired(username, plan):
     return """\
             <html>
             <body>
-                <h1>Hi! {}. Your plan has been expired.</h1>
-                <p>Plan: <b>{}</b></p><br/>
+                <h1>Hi! {}. Your plan: {}. has been expired.</h1>
                 <p>Please update your plan now.</p>
             </body>
             </html>
@@ -39,14 +37,14 @@ def check_almost_expired():
         res = requests.get(f"{url}/api/almost_expired_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            if res is list:
+            if type(res.json()) is list:
                 for user in res.json():
                     username = user["username"]
                     plan = user["plan"]
                     date = user["date"]
                     print(username, plan, date)
                     send_email(None, "Billing reminder", get_html_almost(username, plan, date))
-            elif res is json:
+            else:
                 username = res.json()["username"]
                 plan = res.json()["plan"]
                 date = res.json()["date"]
@@ -61,12 +59,12 @@ def check_expired_users():
         res = requests.get(f"{url}/api/inactive_users", headers={'Accept': 'application/json'}, auth=auth)
 
         if res.status_code == 200:
-            if res is list:
+            if type(res.json()) is list:
                 for user in res.json():
                     username = user["username"]
                     plan = user["plan"]
                     send_email(None, "Billing reminder", get_html_expired(username, plan))
-            elif res is json:
+            else:
                 username = res.json()["username"]
                 plan = res.json()["plan"]
                 send_email(None, "Billing reminder", get_html_expired(username, plan))
