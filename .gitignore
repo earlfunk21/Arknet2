@@ -168,3 +168,5 @@ dev-data.db
 
 migrations
 data.db
+Pipfile
+Pipfile.lock
