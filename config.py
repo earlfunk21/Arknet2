@@ -13,8 +13,9 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     ADMIN_KEY = os.environ.get("ADMIN_KEY")
-
-    SESSION_TYPE = "sqlalchemy"
+    SESSION_TYPE = 'filesystem'
+    SESSION_FILE_DIR = '/tmp/flask_session'
+    SESSION_FILE_THRESHOLD = 1000
 
     FIK_PRIVATE_KEY = os.environ.get("FIK_PRIVATE_KEY")
     FIK_PUBLIC_KEY = os.environ.get("FIK_PUBLIC_KEY")

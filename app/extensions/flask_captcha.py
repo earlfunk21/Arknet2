@@ -18,7 +18,6 @@ class FlaskCaptcha(object):
         self.size = {}
         self.size["height"] = app.config.get("FLASK_CAPTCHA_HEIGHT")
         self.size["width"] = app.config.get("FLASK_CAPTCHA_WIDTH")
-        app.session_interface.db.create_all()
         self.image = ImageCaptcha(**self.size)
         self.answer = str(random.randrange(10**self.length)).zfill(self.length)
 

@@ -26,11 +26,7 @@ def create_app(config=ProductionConfig):
     # Context Processor
     context_processor(app)
 
-    # Initialization
-    with app.app_context():
-
-        # Extensions
-        extensions(app)
+    extensions(app)
 
     return app
 

@@ -17,12 +17,14 @@ def payment_form():
     if form.validate_on_submit():
         remarks = form.remarks.data
         plan = form.plan.data
-        date = form.date.data
+        due_date = form.due_date.data
+        date_paid = form.date_paid.data
         user = form.user.data
         total = form.total.data
         file = form.receipt.data
         payment = Payment(remarks=remarks,
-                            due_date=date,
+                            due_date=due_date,
+                            date_paid=date_paid,
                             plan=plan,
                             user=user,
                             received_by=load_user(),
