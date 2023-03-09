@@ -6,7 +6,7 @@ from flask import render_template, abort, request, redirect, url_for, flash
 from app.auth.utils import admin_required, load_user, require_login
 from sqlalchemy import or_
 from app.utils import loads_token
-from app import fik
+from app import cloud_image
 
 
 @payment_bp.route("/form/", methods=["POST", "GET"])
@@ -31,11 +31,12 @@ def payment_form():
                             amount=total)
         response = None
         if file:
-            response = fik.upload(file)
-            if not response:
-                return abort(500)
-            payment.receipt = response['url']
-            payment.receipt_id = response['fileId']
+            try:
+                response = cloud_image.upload(file)
+                payment.receipt_id = response["public_id"]
+            except Exception as e:
+                print(e)
+                abort(500)
         db.session.add(payment)
         db.session.commit()
         flash("Successfully Added!", 'success')
@@ -77,11 +78,13 @@ def payment_edit(token):
     if form.validate_on_submit():
         remarks = form.remarks.data
         plan = form.plan.data
-        date = form.date.data
+        due_date = form.due_date.data
+        date_paid = form.date_paid.data
         user = form.user.data
         total = form.total.data
         payment.remarks = remarks
-        payment.due_date = date
+        payment.due_date = due_date
+        payment.date_paid = date_paid
         payment.plan = plan
         payment.user = user
         payment.amount=total
@@ -91,7 +94,8 @@ def payment_edit(token):
     form.plan.default = payment.plan
     form.user.default = payment.user
     form.total.default = payment.amount
-    form.date.default = payment.due_date
+    form.due_date.default = payment.due_date
+    form.date_paid.default = payment.date_paid
     form.remarks.default = payment.remarks
     form.process()
     return render_template('payment/edit.html', form=form, payment_id=payment_id)

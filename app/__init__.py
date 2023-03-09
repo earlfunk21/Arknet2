@@ -5,18 +5,18 @@ from flask_session import Session
 
 # Extensions
 from app.models import db
-from app.extensions.imagekit import FlaskImageKit
+from app.extensions.cloud_image import CloudImage
 from .extensions.flask_captcha import FlaskCaptcha
 from flask_migrate import Migrate
 from flask_talisman import Talisman
 
 
 captcha = FlaskCaptcha()
-fik = FlaskImageKit()
+cloud_image = CloudImage()
 talisman = Talisman()
 
 
-def create_app(config=ProductionConfig):
+def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config)
 
@@ -62,7 +62,7 @@ def extensions(app: Flask):
     Session(app)
     captcha.init_app(app)
 
-    fik.init_app(app)
+    cloud_image.init_app(app)
 
     Migrate(app, db)
 

@@ -2,7 +2,6 @@ import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import desc
 
 db = SQLAlchemy()
 
@@ -96,7 +95,6 @@ class Payment(db.Model):
                           default=datetime.datetime.now())
     due_date = db.Column(db.DateTime(timezone=True), nullable=False,
                          default=datetime.datetime.now() + datetime.timedelta(days=30))
-    receipt = db.Column(db.String(255), unique=True)
     receipt_id = db.Column(db.Integer, unique=True)
     amount = db.Column(db.Float, nullable=False)
 
@@ -120,6 +118,12 @@ class Payment(db.Model):
     @hybrid_property
     def is_expired(self):
         return self.due_date < datetime.datetime.now()
+    
+    @property
+    def receipt(self):
+        from app import cloud_image
+
+        return cloud_image.get_url(self.receipt_id) if self.receipt_id is not None else None
 
 
 class Expenses(db.Model):

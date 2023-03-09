@@ -7,9 +7,8 @@ from sqlalchemy import extract
 import timeago
 from app import captcha
 from wtforms import ValidationError
-import random
 
-from send_email import send_email
+
 s = URLSafeTimedSerializer("arkhnet")
 
 

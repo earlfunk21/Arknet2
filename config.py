@@ -16,10 +16,10 @@ class Config(object):
     SESSION_TYPE = 'filesystem'
     SESSION_FILE_DIR = '/tmp/flask_session'
     SESSION_FILE_THRESHOLD = 1000
+    CLOUD_NAME = os.environ.get("CLOUD_NAME")
+    API_KEY = os.environ.get("API_KEY")
+    API_SECRET = os.environ.get("API_SECRET")
 
-    FIK_PRIVATE_KEY = os.environ.get("FIK_PRIVATE_KEY")
-    FIK_PUBLIC_KEY = os.environ.get("FIK_PUBLIC_KEY")
-    FIK_URL_ENDPOINT = os.environ.get("FIK_URL_ENDPOINT")
 
     FLASK_CAPTCHA_LENGTH = 5
     FLASK_CAPTCHA_KEY = os.environ.get("FLASK_CAPTCHA_KEY")

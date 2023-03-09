@@ -6,7 +6,7 @@ from app.expenses.form import ExpensesForm
 from app.models import Expenses, User, db
 from app.utils import loads_token
 from sqlalchemy import or_
-from app import fik
+from app import cloud_image
 
 
 @expenses_bp.route("/")
@@ -41,7 +41,7 @@ def expenses_form():
         expenses = Expenses(name=name, cost=cost, user=user)
         response = None
         if file:
-            response = fik.upload(file)
+            response = cloud_image.upload(file)
             if not response:
                 return abort(500)
             expenses.receipt = response['url']
